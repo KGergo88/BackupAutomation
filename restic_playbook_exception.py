@@ -1,0 +1,2 @@
+class ResticPlaybookException(Exception):
+    pass

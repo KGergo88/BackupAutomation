@@ -2,14 +2,60 @@ import logging
 import pathlib
 import subprocess
 
+from restic_exception import ResticException
 from restic_repository import ResticRepository
+from temporary_environment_variable_setter import TemporaryEnvironmentVariableSetter
 
 class Restic:
-    def __init__(self):
-        logging.info("Looking for restic")
-        ret = subprocess.run("restic version", shell=True)
-        if ret.returncode != 0:
-            raise Exception("Could not find restic! Please install it from https://restic.net")
+    RESTIC_URL = "https://restic.net"
+    RESTIC_EXECUTABLE = "restic"
+    RESTIC_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_PASSWORD"
 
-    def backup(self, repository: ResticRepository):
-        logging.info(f"Creating a backup to \"{repository.path}\"")
+    def __init__(self, dry_mode: bool = False):
+        self.__dry_mode = dry_mode
+        if self.__dry_mode:
+            logging.info(f"Dry mode was requested, commands will only be logged and not executed!")
+
+        logging.info(f"Looking for {Restic.RESTIC_EXECUTABLE}")
+        command = [
+            Restic.RESTIC_EXECUTABLE,
+            "version"
+        ]
+        self.__execute_command(command, f"Could not find {Restic.RESTIC_EXECUTABLE}! Please install it from {Restic.RESTIC_URL}")
+
+    def backup(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...] = (), verbose: bool = True):
+        log_tags_part = f" with tags [{", ".join(tags)}]" if tags else ""
+        logging.info(f"Backing up \"{source_path}\" to repository \"{repository.name}\"{log_tags_part}")
+
+        command_tags_part = []
+        for tag in tags:
+            command_tags_part.append("--tag")
+            command_tags_part.append(f"{tag}")
+
+        command = [
+            Restic.RESTIC_EXECUTABLE,
+            "backup",
+            "--repo", f"{repository.path}",
+            "--verbose" if verbose else "",
+            *command_tags_part,
+            str(source_path)
+        ]
+
+        with TemporaryEnvironmentVariableSetter(Restic.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE, repository.password):
+            self.__execute_command(command)
+
+    def __execute_command(self, command: list[str], custom_error_message: str | None = None):
+        if self.__dry_mode:
+            logging.info(" ".join(command))
+            return
+
+        ret = subprocess.run(command, capture_output=True)
+        if ret.returncode == 0:
+            logging.info(ret.stdout.decode())
+            return
+
+        if custom_error_message:
+            raise ResticException(custom_error_message)
+        else:
+            logging.fatal(ret.stderr.decode())
+            raise ResticException(f"Failed to execute command: \"{command}\". Return code: {ret.returncode}")
