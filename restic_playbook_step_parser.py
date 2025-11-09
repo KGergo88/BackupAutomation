@@ -1,5 +1,5 @@
 import pathlib
-from typing import Callable, Collection
+from typing import Callable
 
 from restic_playbook_exception import ResticPlaybookException
 from restic_playbook_steps import ResticPlaybookStep, ResticPlaybookBackupStep, ResticPlaybookCopyStep
@@ -29,7 +29,7 @@ class ResticPlaybookStepParser:
 
         source_path = pathlib.Path(step_json[ResticPlaybookBackupStep.SOURCE_PATH_KEY])
         if not source_path.is_dir():
-            raise ResticPlaybookException(f"Source path is not a valid directory: {self.__source_path}")
+            raise ResticPlaybookException(f"Source path is not a valid directory: {source_path}")
 
         tags = step_json.get(ResticPlaybookBackupStep.TAGS_KEY, [])
         if not isinstance(tags, list):
