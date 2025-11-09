@@ -1,17 +1,19 @@
 import os
 
 class TemporaryEnvironmentVariableSetter:
-    def __init__(self, variable: str, value: str):
-        self.__variable_name = variable
-        self.__value = value
-        self.__previous_value = os.getenv(variable, None)
+    def __init__(self, environment_variables: dict[str, str]):
+        self.__environment_variables = environment_variables
+        self.__previous_values: dict[str, str|None] = {}
 
     def __enter__(self):
-        os.environ[self.__variable_name] = self.__value
+        for name, value in self.__environment_variables.items():
+            self.__previous_values[name] = os.getenv(name, None)
+            os.environ[name] = value
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if self.__previous_value is None:
-            os.unsetenv(self.__variable_name)
-            return
+        for name, value in self.__environment_variables.items():
+            if self.__previous_values[name] is None:
+                os.unsetenv(name)
+                continue
 
-        os.environ[self.__variable_name] = self.__previous_value
+            os.environ[name] = value
