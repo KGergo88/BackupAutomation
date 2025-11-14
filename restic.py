@@ -36,11 +36,15 @@ class Restic:
             command_tags_part.append("--tag")
             command_tags_part.append(f"{tag}")
 
+        command_verbose_part = []
+        if self.__verbose:
+            command_verbose_part.append("--verbose")
+
         command = [
             Restic.RESTIC_EXECUTABLE,
             "backup",
-            "--repo", f"{repository.path}",
-            "--verbose" if self.__verbose else "",
+            "--repo", str(repository.path),
+            *command_verbose_part,
             *command_tags_part,
             str(source_path)
         ]
@@ -52,12 +56,16 @@ class Restic:
             self.__execute_command(command)
 
     def copy(self, source_repository: ResticRepository, target_repository: ResticRepository):
+        command_verbose_part = []
+        if self.__verbose:
+            command_verbose_part.append("--verbose")
+
         command = [
             Restic.RESTIC_EXECUTABLE,
             "copy",
-            "--from-repo", f"{source_repository.path}",
-            "--repo", f"{target_repository.path}",
-            "--verbose" if self.__verbose else ""
+            "--from-repo", str(source_repository.path),
+            "--repo", str(target_repository.path),
+            *command_verbose_part
         ]
 
         environment_variables = {
