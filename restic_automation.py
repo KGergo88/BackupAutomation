@@ -7,7 +7,7 @@ from restic_playbook_parser import ResticPlaybookParser
 
 
 def main(arguments: argparse.Namespace):
-    restic = Restic(arguments.dry_mode)
+    restic = Restic(arguments.dry_mode, arguments.verbose)
     playbook = ResticPlaybookParser(arguments.no_interaction).parse(arguments.playbook)
     playbook.execute(restic)
 
@@ -26,6 +26,9 @@ if "__main__" == __name__:
     parser.add_argument("--no-interaction",
                         action="store_true",
                         help="No user interactions will be made. The program will fail if user input would be needed.")
+    parser.add_argument("--verbose",
+                        action="store_true",
+                        help="Verbose mode. More information will be printed.")
 
     parsed_arguments = parser.parse_args()
 
