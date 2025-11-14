@@ -76,17 +76,14 @@ class Restic:
             self.__execute_command(command)
 
     def __execute_command(self, command: list[str], custom_error_message: str | None = None):
+        logging.info(f"Executing command: \"{" ".join(command)}\"")
         if self.__dry_mode:
-            logging.info(" ".join(command))
             return
 
-        ret = subprocess.run(command, capture_output=True)
-        if ret.returncode == 0:
-            logging.info(ret.stdout.decode())
-            return
-
-        if custom_error_message:
-            raise ResticException(custom_error_message)
-        else:
-            logging.fatal(ret.stderr.decode())
-            raise ResticException(f"Failed to execute command: \"{command}\". Return code: {ret.returncode}")
+        try:
+            subprocess.run(command, check=True)
+        except Exception as e:
+            if custom_error_message:
+                raise ResticException(custom_error_message, e) from e
+            else:
+                raise ResticException(f"Failed to execute command: \"{command}\"", e) from e
