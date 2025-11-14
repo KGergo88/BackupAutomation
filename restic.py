@@ -44,6 +44,7 @@ class Restic:
             *command_tags_part,
             str(source_path)
         ]
+
         environment_variables = {
             Restic.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: repository.password
         }
