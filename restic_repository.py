@@ -11,13 +11,13 @@ class ResticRepository:
         return f"ResticRepository({self.path})"
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.__name
 
     @property
-    def path(self):
+    def path(self) -> pathlib.Path:
         return self.__path
 
     @property
-    def password(self):
+    def password(self) -> str:
         return self.__password
