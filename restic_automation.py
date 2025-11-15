@@ -6,15 +6,25 @@ from restic import Restic
 from restic_playbook_parser import ResticPlaybookParser
 
 
-def main(arguments: argparse.Namespace):
-    restic = Restic(arguments.dry_mode, arguments.verbose)
-    playbook = ResticPlaybookParser(arguments.no_interaction).parse(arguments.playbook)
+def main():
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    logger.info("Starting restic automation")
+
+    args = parse_arguments()
+    logger.info(f"Received arguments: {args}")
+
+    restic = Restic(args.dry_mode, args.verbose)
+
+    logger.info(f"Parsing playbook: {args.playbook}")
+    playbook = ResticPlaybookParser(args.no_interaction).parse(args.playbook)
+
+    logger.info(f"Executing playbook: {playbook}")
     playbook.execute(restic)
 
 
-if "__main__" == __name__:
-    logging.basicConfig(level=logging.INFO)
-
+def parse_arguments():
     parser = argparse.ArgumentParser(prog="Restic Automation")
     parser.add_argument("--playbook",
                         type=pathlib.Path,
@@ -31,5 +41,8 @@ if "__main__" == __name__:
                         help="Verbose mode. More information will be printed.")
 
     parsed_arguments = parser.parse_args()
+    return parsed_arguments
 
-    main(parsed_arguments)
+
+if "__main__" == __name__:
+    main()
