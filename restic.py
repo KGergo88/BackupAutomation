@@ -4,7 +4,7 @@ import subprocess
 
 from restic_exception import ResticException
 from restic_repository import ResticRepository
-from temporary_environment_variable_setter import TemporaryEnvironmentVariableSetter
+from temporary_environment_variables import TemporaryEnvironmentVariables
 
 
 class Restic:
@@ -52,7 +52,7 @@ class Restic:
         environment_variables = {
             Restic.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: repository.password
         }
-        with TemporaryEnvironmentVariableSetter(environment_variables):
+        with TemporaryEnvironmentVariables(environment_variables):
             self.__execute_command(command)
 
     def copy(self, source_repository: ResticRepository, target_repository: ResticRepository):
@@ -72,7 +72,7 @@ class Restic:
             Restic.RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE: source_repository.password,
             Restic.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: target_repository.password
         }
-        with TemporaryEnvironmentVariableSetter(environment_variables):
+        with TemporaryEnvironmentVariables(environment_variables):
             self.__execute_command(command)
 
     def __execute_command(self, command: list[str], custom_error_message: str | None = None):

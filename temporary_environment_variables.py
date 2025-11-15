@@ -1,6 +1,7 @@
 import os
 
-class TemporaryEnvironmentVariableSetter:
+
+class TemporaryEnvironmentVariables:
     """
     Context manager to temporarily set environment variables.
     Restores original values (or unsets them) on exit.
