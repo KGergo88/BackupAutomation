@@ -7,7 +7,9 @@ from restic_playbook_parser import ResticPlaybookParser
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s [%(levelname)s][%(name)s] %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger(__name__)
 
     logger.info("Starting restic automation")
