@@ -13,14 +13,17 @@ class Restic:
     RESTIC_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_PASSWORD"
     RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_FROM_PASSWORD"
 
-    def __init__(self, dry_mode: bool = False, verbose: bool = False):
+    def __init__(self, dry_mode: bool = False, verbose: bool = False, logger: logging.Logger = logging.getLogger(__name__)):
+        self.__logger = logger
+
         self.__dry_mode = dry_mode
         if self.__dry_mode:
-            logging.info(f"Dry mode was requested, commands will only be logged and not executed!")
+            self.__logger.info(f"Dry mode was requested, commands will only be logged and not executed!")
 
         self.__verbose = verbose
 
-        logging.info(f"Looking for {Restic.RESTIC_EXECUTABLE}")
+
+        self.__logger.info(f"Looking for {Restic.RESTIC_EXECUTABLE}")
         command = [
             Restic.RESTIC_EXECUTABLE,
             "version"
@@ -29,7 +32,7 @@ class Restic:
 
     def backup(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...] = ()):
         log_tags_part = f" with tags [{", ".join(tags)}]" if tags else ""
-        logging.info(f"Backing up \"{source_path}\" to repository \"{repository.name}\"{log_tags_part}")
+        self.__logger.info(f"Backing up \"{source_path}\" to repository \"{repository.name}\"{log_tags_part}")
 
         command_tags_part = []
         for tag in tags:
@@ -76,7 +79,7 @@ class Restic:
             self.__execute_command(command)
 
     def __execute_command(self, command: list[str], custom_error_message: str | None = None):
-        logging.info(f"Executing command: \"{" ".join(command)}\"")
+        self.__logger.info(f"Executing command: \"{" ".join(command)}\"")
         if self.__dry_mode:
             return
 
