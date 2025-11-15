@@ -1,9 +1,7 @@
 import pathlib
 from abc import ABC, abstractmethod
-from typing import Callable
 
 from restic import Restic
-from restic_playbook_exception import ResticPlaybookException
 from restic_repository import ResticRepository
 
 
