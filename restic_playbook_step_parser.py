@@ -44,4 +44,7 @@ class ResticPlaybookStepParser:
         target_repository_name = step_json[ResticPlaybookCopyStep.TARGET_REPOSITORY_KEY]
         target_repository = self.__repository_lookup(target_repository_name)
 
+        if source_repository == target_repository:
+            raise ResticPlaybookException(f"The source and target repositories cannot be the same!")
+
         return ResticPlaybookCopyStep(source_repository, target_repository)
