@@ -119,4 +119,5 @@ class ResticPlaybookParser:
         if repository_name in self.__repositories:
             return self.__repositories[repository_name]
 
-        raise ResticPlaybookException(f"Unknown repository: {repository_name}")
+        raise ResticPlaybookException(
+            f"Unknown repository: \"{repository_name}\". The known repositories are: {list(self.__repositories.keys())}")
