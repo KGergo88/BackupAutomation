@@ -24,6 +24,7 @@ def main():
 
     logger.info(f"Executing playbook: {playbook}")
     playbook.execute(restic)
+    logger.info(f"Finished executing playbook")
 
 
 def parse_arguments():
