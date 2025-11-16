@@ -46,7 +46,7 @@ class Restic:
         command = [
             Restic.RESTIC_EXECUTABLE,
             "backup",
-            "--repo", str(repository.path),
+            "--repo", str(repository.uri),
             *command_verbose_part,
             *command_tags_part,
             str(source_path)
@@ -66,8 +66,8 @@ class Restic:
         command = [
             Restic.RESTIC_EXECUTABLE,
             "copy",
-            "--from-repo", str(source_repository.path),
-            "--repo", str(target_repository.path),
+            "--from-repo", str(source_repository.uri),
+            "--repo", str(target_repository.uri),
             *command_verbose_part
         ]
 

@@ -10,7 +10,7 @@ from restic_playbook_exception import ResticPlaybookException
 from restic_playbook_format import ResticPlaybookFormat
 from restic_playbook_step_parser import ResticPlaybookStepParser
 from restic_playbook_steps import ResticPlaybookStep
-from restic_repository import ResticRepository
+from restic_repository import ResticRepository, ResticRepositoryUri
 
 
 class ResticPlaybookParser:
@@ -62,7 +62,7 @@ class ResticPlaybookParser:
                 if expected_key not in repository_json:
                     raise ResticPlaybookException(f"Missing \"{expected_key}\" for repository #{index + 1}")
 
-        __check_for_key(playbook_repository_json, repository_index, [ResticPlaybookFormat.REPOSITORIES_PATH_KEY])
+        __check_for_key(playbook_repository_json, repository_index, [ResticPlaybookFormat.REPOSITORIES_URI_KEY])
 
     @staticmethod
     def __check_playbook_step_json(playbook_step_json: dict, step_index: int):
@@ -79,11 +79,13 @@ class ResticPlaybookParser:
 
     def __parse_repositories_json(self, repositories_json: list):
         for repository_json in repositories_json:
-            repository_path = pathlib.Path(repository_json[ResticPlaybookFormat.REPOSITORIES_PATH_KEY])
-            if not repository_path.is_dir():
-                raise ResticPlaybookException(f"The repository path is not a valid directory: {repository_path}")
+            raw_repository_uri = repository_json[ResticPlaybookFormat.REPOSITORIES_URI_KEY]
+            repository_uri = ResticRepositoryUri(raw_repository_uri)
 
-            repository_name = repository_json.get(ResticPlaybookFormat.REPOSITORIES_NAME_KEY, repository_path.name)
+            if repository_uri.is_local() and not pathlib.Path(repository_uri.path).is_dir():
+                    raise ResticPlaybookException(f"The repository path is not a valid directory: {repository_uri.path}")
+
+            repository_name = repository_json.get(ResticPlaybookFormat.REPOSITORIES_NAME_KEY, repository_uri.repository_name)
             if repository_name in self.__repositories:
                 raise ResticPlaybookException(f"The repository \"{repository_name}\" already exists!"
                                               f" This might be a duplicate repository."
@@ -91,7 +93,8 @@ class ResticPlaybookParser:
 
             password_value_from_playbook = repository_json.get(ResticPlaybookFormat.REPOSITORIES_PASSWORD_KEY, None)
             repository_password = self.__resolve_repository_password(repository_name, password_value_from_playbook)
-            repository = ResticRepository(repository_name, repository_path, repository_password)
+
+            repository = ResticRepository(repository_name, repository_uri, repository_password)
             self.__repositories[repository_name] = repository
 
     def __resolve_repository_password(self, repository_name, password_value_from_playbook: str|None) -> str:
