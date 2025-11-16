@@ -2,12 +2,13 @@ import logging
 import pathlib
 import subprocess
 
+from backup_backend import BackupBackend
 from restic_exception import ResticException
 from restic_repository import ResticRepository
 from temporary_environment_variables import TemporaryEnvironmentVariables
 
 
-class Restic:
+class Restic(BackupBackend):
     RESTIC_URL = "https://restic.net"
     RESTIC_EXECUTABLE = "restic"
     RESTIC_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_PASSWORD"

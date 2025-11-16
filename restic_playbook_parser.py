@@ -1,10 +1,12 @@
 import getpass
-import json
 import os
 import pathlib
 
 from typing import Any
 
+import utility
+
+from playbook_parser import PlaybookParser
 from restic_playbook import ResticPlaybook
 from restic_playbook_exception import ResticPlaybookException
 from restic_playbook_format import ResticPlaybookFormat
@@ -13,7 +15,7 @@ from restic_playbook_steps import ResticPlaybookStep
 from restic_repository import ResticRepository, ResticRepositoryUri
 
 
-class ResticPlaybookParser:
+class ResticPlaybookParser(PlaybookParser):
     def __init__(self, no_interaction: bool = False):
         self.__no_interaction = no_interaction
         self.__playbook_path: pathlib.Path|None = None
@@ -22,11 +24,7 @@ class ResticPlaybookParser:
 
     def parse(self, playbook_path: pathlib.Path):
         self.__playbook_path = playbook_path
-        if not self.__playbook_path.is_file():
-            raise FileNotFoundError(self.__playbook_path)
-
-        playbook_content = self.__playbook_path.read_text(encoding="utf-8")
-        playbook_json = json.loads(playbook_content)
+        playbook_json = utility.read_json_file(self.__playbook_path)
 
         self.__check_playbook_json(playbook_json)
         self.__parse_playbook_json(playbook_json)
@@ -36,6 +34,13 @@ class ResticPlaybookParser:
     def __check_playbook_json(self, playbook_json: Any):
         if not isinstance(playbook_json, dict):
             raise ResticPlaybookException("The playbook is not a valid JSON dictionary!")
+
+        if ResticPlaybookFormat.TYPE_KEY not in playbook_json:
+            raise ResticPlaybookException(f"Missing \"{ResticPlaybookFormat.TYPE_KEY}\" in playbook!")
+
+        if playbook_json[ResticPlaybookFormat.TYPE_KEY] != ResticPlaybookFormat.TYPE_VALUE_RESTIC:
+            raise ResticPlaybookException(f"Invalid playbook type: \"{playbook_json[ResticPlaybookFormat.TYPE_KEY]}\". "
+                                          f"Expected: \"{ResticPlaybookFormat.TYPE_VALUE_RESTIC}\"")
 
         if ResticPlaybookFormat.REPOSITORIES_KEY not in playbook_json:
             raise ResticPlaybookException(f"Missing \"{ResticPlaybookFormat.REPOSITORIES_KEY} in playbook!")

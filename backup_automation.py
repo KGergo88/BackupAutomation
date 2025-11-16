@@ -2,8 +2,9 @@ import argparse
 import logging
 import pathlib
 
-from restic import Restic
-from restic_playbook_parser import ResticPlaybookParser
+from backup_backend_factory import BackupBackendFactory
+from playbook import Playbook
+from playbook_parser_factory import PlaybookParserFactory
 
 
 def main():
@@ -12,23 +13,25 @@ def main():
                         datefmt='%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger(__name__)
 
-    logger.info("Starting restic automation")
+    logger.info("Starting backup automation")
 
     args = parse_arguments()
     logger.info(f"Received arguments: {args}")
 
-    restic = Restic(args.dry_mode, args.verbose)
+    playbook_type = Playbook.determine_playbook_type(args.playbook)
+    playbook_parser = PlaybookParserFactory.create(playbook_type, args.no_interaction)
+    backup_backend = BackupBackendFactory.create(playbook_type, args.dry_mode, args.verbose)
 
     logger.info(f"Parsing playbook: {args.playbook}")
-    playbook = ResticPlaybookParser(args.no_interaction).parse(args.playbook)
+    playbook = playbook_parser.parse(args.playbook)
 
     logger.info(f"Executing playbook: {playbook}")
-    playbook.execute(restic)
+    playbook.execute(backup_backend)
     logger.info(f"Finished executing playbook")
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(prog="Restic Automation")
+    parser = argparse.ArgumentParser(prog="Backup Automation")
     parser.add_argument("--playbook",
                         type=pathlib.Path,
                         required=True,

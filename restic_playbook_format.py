@@ -1,4 +1,7 @@
-class ResticPlaybookFormat:
+from playbook_format import PlaybookFormat
+
+
+class ResticPlaybookFormat(PlaybookFormat):
     REPOSITORIES_KEY = "repositories"
     REPOSITORIES_NAME_KEY = "name"
     REPOSITORIES_URI_KEY = "uri"
