@@ -32,9 +32,8 @@ def main():
 
 def parse_arguments():
     parser = argparse.ArgumentParser(prog="Backup Automation")
-    parser.add_argument("--playbook",
+    parser.add_argument("playbook",
                         type=pathlib.Path,
-                        required=True,
                         help="Filepath of a playbook")
     parser.add_argument("--dry-mode",
                         action="store_true",
