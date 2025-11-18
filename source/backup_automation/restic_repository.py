@@ -2,7 +2,7 @@ import pathlib
 
 from enum import auto, Enum
 
-from restic_playbook_format import ResticPlaybookFormat
+from backup_automation.restic_playbook_format import ResticPlaybookFormat
 
 
 class ResticRepositoryUriScheme(Enum):

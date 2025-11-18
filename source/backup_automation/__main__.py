@@ -2,9 +2,9 @@ import argparse
 import logging
 import pathlib
 
-from backup_backend_factory import BackupBackendFactory
-from playbook import Playbook
-from playbook_parser_factory import PlaybookParserFactory
+from backup_automation.backup_backend_factory import BackupBackendFactory
+from backup_automation.playbook import Playbook
+from backup_automation.playbook_parser_factory import PlaybookParserFactory
 
 
 def main():

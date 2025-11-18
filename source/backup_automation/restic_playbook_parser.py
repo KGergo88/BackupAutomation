@@ -4,15 +4,15 @@ import pathlib
 
 from typing import Any
 
-import utility
+import backup_automation.utility as utility
 
-from playbook_parser import PlaybookParser
-from restic_playbook import ResticPlaybook
-from restic_playbook_exception import ResticPlaybookException
-from restic_playbook_format import ResticPlaybookFormat
-from restic_playbook_step_parser import ResticPlaybookStepParser
-from restic_playbook_steps import ResticPlaybookStep
-from restic_repository import ResticRepository, ResticRepositoryUri
+from backup_automation.playbook_parser import PlaybookParser
+from backup_automation.restic_playbook import ResticPlaybook
+from backup_automation.restic_playbook_exception import ResticPlaybookException
+from backup_automation.restic_playbook_format import ResticPlaybookFormat
+from backup_automation.restic_playbook_step_parser import ResticPlaybookStepParser
+from backup_automation.restic_playbook_steps import ResticPlaybookStep
+from backup_automation.restic_repository import ResticRepository, ResticRepositoryUri
 
 
 class ResticPlaybookParser(PlaybookParser):

@@ -1,6 +1,6 @@
-from backup_backend import BackupBackend
-from playbook import PlaybookType
-from restic import Restic
+from backup_automation.backup_backend import BackupBackend
+from backup_automation.playbook import PlaybookType
+from backup_automation.restic import Restic
 
 
 class BackupBackendFactory:

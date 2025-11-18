@@ -1,8 +1,8 @@
 import pathlib
 from abc import ABC, abstractmethod
 
-from restic import Restic
-from restic_repository import ResticRepository
+from backup_automation.restic import Restic
+from backup_automation.restic_repository import ResticRepository
 
 
 class ResticPlaybookStep(ABC):

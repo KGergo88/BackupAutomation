@@ -1,4 +1,4 @@
-from playbook_format import PlaybookFormat
+from backup_automation.playbook_format import PlaybookFormat
 
 
 class ResticPlaybookFormat(PlaybookFormat):
