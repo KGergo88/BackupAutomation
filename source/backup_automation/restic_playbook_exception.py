@@ -1,2 +1,4 @@
 class ResticPlaybookException(Exception):
-    pass
+    """
+    Exception to raise when restic playbook related errors happen.
+    """

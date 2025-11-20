@@ -9,29 +9,40 @@ from backup_automation.temporary_environment_variables import TemporaryEnvironme
 
 
 class Restic(BackupBackend):
+    """
+    Class that represents the restic backup software.
+    """
     RESTIC_URL = "https://restic.net"
     RESTIC_EXECUTABLE = "restic"
     RESTIC_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_PASSWORD"
     RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_FROM_PASSWORD"
 
-    def __init__(self, dry_mode: bool = False, verbose: bool = False, logger: logging.Logger = logging.getLogger(__name__)):
+    def __init__(self,
+                 dry_mode: bool = False,
+                 verbose: bool = False,
+                 logger: logging.Logger = logging.getLogger(__name__)):
         self.__logger = logger
 
         self.__dry_mode = dry_mode
         if self.__dry_mode:
-            self.__logger.info(f"Dry mode was requested, commands will only be logged and not executed!")
+            self.__logger.info("Dry mode was requested, commands will only be logged and not executed!")
 
         self.__verbose = verbose
 
 
-        self.__logger.info(f"Looking for {Restic.RESTIC_EXECUTABLE}")
+        self.__logger.info("Looking for %s", Restic.RESTIC_EXECUTABLE)
         command = [
             Restic.RESTIC_EXECUTABLE,
             "version"
         ]
-        self.__execute_command(command, f"Could not find {Restic.RESTIC_EXECUTABLE}! Please install it from {Restic.RESTIC_URL}")
+        self.__execute_command(command,
+                               f"Could not find {Restic.RESTIC_EXECUTABLE}! Please install it from {Restic.RESTIC_URL}")
 
     def backup(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...] = ()):
+        """
+        Backup the source path content to the repository and apply the tags to the snapshots.
+        Link: https://restic.readthedocs.io/en/stable/040_backup.html
+        """
         log_tags_part = f" with tags [{", ".join(tags)}]" if tags else ""
         self.__logger.info(f"Backing up \"{source_path}\" to repository \"{repository.name}\"{log_tags_part}")
 
@@ -60,6 +71,10 @@ class Restic(BackupBackend):
             self.__execute_command(command)
 
     def copy(self, source_repository: ResticRepository, target_repository: ResticRepository):
+        """
+        Copy snapshots from the source repository to the target repository.
+        Link: https://restic.readthedocs.io/en/stable/045_working_with_repos.html#copying-snapshots-between-repositories
+        """
         command_verbose_part = []
         if self.__verbose:
             command_verbose_part.append("--verbose")
@@ -89,5 +104,5 @@ class Restic(BackupBackend):
         except Exception as e:
             if custom_error_message:
                 raise ResticException(custom_error_message, e) from e
-            else:
-                raise ResticException(f"Failed to execute command: \"{command}\"", e) from e
+
+            raise ResticException(f"Failed to execute command: \"{command}\"", e) from e

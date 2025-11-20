@@ -5,6 +5,9 @@ from typing import Any
 
 
 def read_json_file(path: pathlib.Path) -> Any:
+    """
+    Reads a json file and returns the content as an object.
+    """
     if not path.is_file():
         raise FileNotFoundError(path)
 

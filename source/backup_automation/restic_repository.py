@@ -2,16 +2,20 @@ import pathlib
 
 from enum import auto, Enum
 
-from backup_automation.restic_playbook_format import ResticPlaybookFormat
-
 
 class ResticRepositoryUriScheme(Enum):
+    """
+    Lists the supported repository URI schemes.
+    """
     UNKNOWN = auto()
-    LOCAL = auto()
-    SFTP = auto()
+    LOCAL = auto()      # The repository URI points to a local directory
+    SFTP = auto()       # The repository URI points to a remote directory that shall be accessed via SFTP
 
 
 class ResticRepositoryUri:
+    """
+    Class to represent the URI of a restic repository.
+    """
     URI_SCHEME_PREFIX_LOCAL = "local:"
     URI_SCHEME_PREFIX_SFTP = "sftp:"
 
@@ -38,25 +42,43 @@ class ResticRepositoryUri:
         return self.uri
 
     def is_sftp(self) -> bool:
+        """
+        Returns whether the repository is a SFTP repository.
+        """
         return self.__scheme == ResticRepositoryUriScheme.SFTP
 
     def is_local(self) -> bool:
+        """
+        Returns whether the repository is a local repository.
+        """
         return self.__scheme == ResticRepositoryUriScheme.LOCAL
 
     @property
     def uri(self) -> str:
+        """
+        The URI of the repository.
+        """
         return self.__uri
 
     @property
     def path(self) -> str:
+        """
+        The path of the repository.
+        """
         return self.__path
 
     @property
     def repository_name(self) -> str:
+        """
+        The name of the repository.
+        """
         return pathlib.Path(self.__path).name
 
 
 class ResticRepository:
+    """
+    Class to represent a restic repository.
+    """
     def __init__(self, repository_name: str, repository_uri: ResticRepositoryUri, repository_password: str):
         self.__name = repository_name
         self.__uri = repository_uri
@@ -67,12 +89,21 @@ class ResticRepository:
 
     @property
     def name(self) -> str:
+        """
+        The name of the repository.
+        """
         return self.__name
 
     @property
     def uri(self) -> ResticRepositoryUri:
+        """
+        The URI of the repository.
+        """
         return self.__uri
 
     @property
     def password(self) -> str:
+        """
+        The password of the repository.
+        """
         return self.__password

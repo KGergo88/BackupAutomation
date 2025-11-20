@@ -1,2 +1,4 @@
 class PlaybookException(Exception):
-    pass
+    """
+    Exception to raise when playbook related errors happen.
+    """

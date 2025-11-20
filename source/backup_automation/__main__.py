@@ -9,6 +9,9 @@ from backup_automation.playbook_parser_factory import PlaybookParserFactory
 
 
 def main():
+    """
+    The main function of the package.
+    """
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s [%(levelname)s][%(name)s] %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
@@ -18,21 +21,24 @@ def main():
 
     logger.info("Starting backup automation")
 
-    logger.info(f"Received arguments: {args}")
+    logger.info("Received arguments: %s", args)
 
     playbook_type = Playbook.determine_playbook_type(args.playbook)
     playbook_parser = PlaybookParserFactory.create(playbook_type, args.no_interaction)
     backup_backend = BackupBackendFactory.create(playbook_type, args.dry_mode, args.verbose)
 
-    logger.info(f"Parsing playbook: {args.playbook}")
+    logger.info("Parsing playbook: %s", args.playbook)
     playbook = playbook_parser.parse(args.playbook)
 
-    logger.info(f"Executing playbook: {playbook}")
+    logger.info("Executing playbook: %s", playbook)
     playbook.execute(backup_backend)
-    logger.info(f"Finished executing playbook")
+    logger.info("Finished executing playbook!")
 
 
 def parse_arguments():
+    """
+    Function to parse the command line arguments.
+    """
     parser = argparse.ArgumentParser(prog="Backup Automation")
     parser.add_argument("playbook",
                         type=pathlib.Path,
