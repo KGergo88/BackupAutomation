@@ -1,7 +1,7 @@
-from playbook import PlaybookType
+from backup_automation.playbook import PlaybookType
 
-from playbook_parser import PlaybookParser
-from restic_playbook_parser import ResticPlaybookParser
+from backup_automation.playbook_parser import PlaybookParser
+from backup_automation.restic_playbook_parser import ResticPlaybookParser
 
 
 class PlaybookParserFactory:

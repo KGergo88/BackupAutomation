@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from backup_backend import BackupBackend
+from backup_automation.backup_backend import BackupBackend
 
 
 class PlaybookStep(ABC):

@@ -2,9 +2,10 @@ import argparse
 import logging
 import pathlib
 
-from backup_backend_factory import BackupBackendFactory
-from playbook import Playbook
-from playbook_parser_factory import PlaybookParserFactory
+from backup_automation import __version__
+from backup_automation.backup_backend_factory import BackupBackendFactory
+from backup_automation.playbook import Playbook
+from backup_automation.playbook_parser_factory import PlaybookParserFactory
 
 
 def main():
@@ -13,9 +14,10 @@ def main():
                         datefmt='%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger(__name__)
 
+    args = parse_arguments()
+
     logger.info("Starting backup automation")
 
-    args = parse_arguments()
     logger.info(f"Received arguments: {args}")
 
     playbook_type = Playbook.determine_playbook_type(args.playbook)
@@ -32,9 +34,8 @@ def main():
 
 def parse_arguments():
     parser = argparse.ArgumentParser(prog="Backup Automation")
-    parser.add_argument("--playbook",
+    parser.add_argument("playbook",
                         type=pathlib.Path,
-                        required=True,
                         help="Filepath of a playbook")
     parser.add_argument("--dry-mode",
                         action="store_true",
@@ -45,6 +46,10 @@ def parse_arguments():
     parser.add_argument("--verbose",
                         action="store_true",
                         help="Verbose mode. More information will be printed.")
+    parser.add_argument("--version",
+                        action="version",
+                        version=f"%(prog)s v{__version__}",
+                        help="Show program's version and exit.")
 
     parsed_arguments = parser.parse_args()
     return parsed_arguments

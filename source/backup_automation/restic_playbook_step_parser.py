@@ -1,9 +1,9 @@
 import pathlib
 from typing import Callable
 
-from restic_playbook_exception import ResticPlaybookException
-from restic_playbook_steps import ResticPlaybookStep, ResticPlaybookBackupStep, ResticPlaybookCopyStep
-from restic_repository import ResticRepository
+from backup_automation.restic_playbook_exception import ResticPlaybookException
+from backup_automation.restic_playbook_steps import ResticPlaybookStep, ResticPlaybookBackupStep, ResticPlaybookCopyStep
+from backup_automation.restic_repository import ResticRepository
 
 
 class ResticPlaybookStepParser:

@@ -1,5 +1,5 @@
-from restic import Restic
-from restic_playbook_steps import ResticPlaybookStep
+from backup_automation.restic import Restic
+from backup_automation.restic_playbook_steps import ResticPlaybookStep
 
 
 class ResticPlaybook:

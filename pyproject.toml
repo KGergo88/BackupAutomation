@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "backup-automation"
+description = "Extensible backup automation framework using playbooks"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "KGergo88", email = "kocsisandrasgergo@gmail.com"}]
+dynamic = ["version"]
+keywords = [
+    "restic",
+    "backup",
+    "automation"]
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Private :: Do Not Upload"
+]
+
+[project.optional-dependencies]
+ci = ["tox>=4.32.0"]
+
+[project.scripts]
+backup-automation = "backup_automation.__main__:main"
+
+[project.urls]
+Repository = "https://github.com/KGergo88/BackupAutomation.git"
+Issues = "https://github.com/KGergo88/BackupAutomation/issues"
+
+[tool.pylint]
+disable = "missing-module-docstring"
+max-line-length = 121
+
+[tool.setuptools.dynamic]
+version = {attr = "backup_automation.__version__"}
+
+[tool.setuptools.packages.find]
+where = ["source"]
+
+[tool.tox]
+requires = ["tox>=4.32.0"]
+env_list = ["static-checks"]
+
+[tool.tox.env.static-checks]
+description = "Run static checks on project"
+deps = [
+    "mypy>=1.18.2",
+    "pylint>=4.0.3"
+]
+commands = [
+    ["mypy", "source"],
+    ["pylint", "source"]
+]

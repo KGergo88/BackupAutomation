@@ -2,10 +2,10 @@ import logging
 import pathlib
 import subprocess
 
-from backup_backend import BackupBackend
-from restic_exception import ResticException
-from restic_repository import ResticRepository
-from temporary_environment_variables import TemporaryEnvironmentVariables
+from backup_automation.backup_backend import BackupBackend
+from backup_automation.restic_exception import ResticException
+from backup_automation.restic_repository import ResticRepository
+from backup_automation.temporary_environment_variables import TemporaryEnvironmentVariables
 
 
 class Restic(BackupBackend):

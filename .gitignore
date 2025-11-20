@@ -1,7 +1,11 @@
+# IDE related
 /.idea
 
-/__pycache__
-
-/playbooks
-
+# Python related
 /venv
+/__pycache__
+*.egg-info
+*.pyc
+
+# Project related
+/playbooks
