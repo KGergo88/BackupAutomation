@@ -7,13 +7,22 @@ from backup_automation.restic_repository import ResticRepository
 
 
 class ResticPlaybookStepParser:
+    # pylint: disable=too-few-public-methods
+    # The class does not need more methods at the moment. This means that the class could
+    # theoretically be replaced by a function, but implementing it like this helps with naming.
+    """
+    Class to represent a restic specific playbook step parser.
+    """
     STEPS_COMMAND_BACKUP = "backup"
     STEPS_COMMAND_COPY = "copy"
 
     def __init__(self, repository_lookup: Callable[[str], ResticRepository]):
         self.__repository_lookup = repository_lookup
 
-    def parse(self, step_json: dict):
+    def parse(self, step_json: dict) -> ResticPlaybookStep:
+        """
+        Parses a playbook step from received JSON object into a ResticPlaybookStep object.
+        """
         step_command = step_json[ResticPlaybookStep.STEPS_COMMAND_KEY]
         match step_command:
             case ResticPlaybookStepParser.STEPS_COMMAND_BACKUP:
@@ -45,6 +54,6 @@ class ResticPlaybookStepParser:
         target_repository = self.__repository_lookup(target_repository_name)
 
         if source_repository == target_repository:
-            raise ResticPlaybookException(f"The source and target repositories cannot be the same!")
+            raise ResticPlaybookException("The source and target repositories cannot be the same!")
 
         return ResticPlaybookCopyStep(source_repository, target_repository)
