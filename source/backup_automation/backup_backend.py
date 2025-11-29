@@ -1,4 +1,14 @@
 from abc import ABC
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class BackupBackendSettings:
+    """
+    Contains the settings available for backup backends.
+    """
+    dry_mode: bool
+    verbose: bool
+
 
 class BackupBackend(ABC):
     # pylint: disable=too-few-public-methods

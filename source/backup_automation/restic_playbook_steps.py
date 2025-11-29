@@ -33,7 +33,7 @@ class ResticPlaybookBackupStep(ResticPlaybookStep):
         self.__source_path = source_path
         self.__tags = tags
 
-    def execute(self, backup_backend: Restic):
+    def execute(self, backup_backend: Restic) -> None:
         backup_backend.backup(self.__repository, self.__source_path, self.__tags)
 
 
@@ -52,5 +52,5 @@ class ResticPlaybookCopyStep(ResticPlaybookStep):
         self.__source_repository = source_repository
         self.__target_repository = target_repository
 
-    def execute(self, backup_backend: Restic):
+    def execute(self, backup_backend: Restic) -> None:
         backup_backend.copy(self.__source_repository, self.__target_repository)

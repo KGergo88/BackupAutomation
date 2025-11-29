@@ -12,7 +12,7 @@ class PlaybookStep[BackupBackendT: BackupBackend](ABC):
     Steps represent a specific action in a playbook that shall be done with the backup backend.
     """
     @abstractmethod
-    def execute(self, backup_backend: BackupBackendT):
+    def execute(self, backup_backend: BackupBackendT) -> None:
         """
         Execute the step with the given backup backend.
         """

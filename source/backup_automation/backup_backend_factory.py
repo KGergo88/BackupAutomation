@@ -1,4 +1,4 @@
-from backup_automation.backup_backend import BackupBackend
+from backup_automation.backup_backend import BackupBackend, BackupBackendSettings
 from backup_automation.playbook import PlaybookType
 from backup_automation.restic import Restic
 
@@ -11,12 +11,12 @@ class BackupBackendFactory:
     Class to create BackupBackend objects.
     """
     @staticmethod
-    def create(playbook_type: PlaybookType, *args, **kwargs) -> BackupBackend:
+    def create(playbook_type: PlaybookType, backup_backend_settings: BackupBackendSettings) -> BackupBackend:
         """
         Creates a BackupBackend object that belongs to the playbook_type.
         """
         match playbook_type:
             case PlaybookType.RESTIC:
-                return Restic(*args, **kwargs)
+                return Restic(backup_backend_settings)
             case _:
                 raise ValueError(f"Unexpected playbook type: {playbook_type}")

@@ -24,11 +24,11 @@ class Playbook[BackupBackendT: BackupBackend](ABC):
     They contain steps and that execute an action on the BackupBackend.
     """
     @abstractmethod
-    def __init__(self, steps: tuple[PlaybookStep]):
+    def __init__(self, steps: tuple[PlaybookStep[BackupBackendT]]) -> None:
         pass
 
     @abstractmethod
-    def execute(self, backup_backend: BackupBackendT):
+    def execute(self, backup_backend: BackupBackendT) -> None:
         """
         Execute the playbook with the given backup backend.
         """

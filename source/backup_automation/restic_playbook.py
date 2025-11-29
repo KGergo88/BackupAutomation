@@ -10,7 +10,7 @@ class ResticPlaybook(Playbook[Restic]):
     def __init__(self, steps: tuple[ResticPlaybookStep, ...]):
         self.__steps = steps
 
-    def execute(self, backup_backend: Restic):
+    def execute(self, backup_backend: Restic) -> None:
         """
         Execute the playbook with the given backup backend.
         """
