@@ -103,23 +103,23 @@ class ResticPlaybookParser(PlaybookParser):
             if repository_uri.is_local() and not pathlib.Path(repository_uri.path).is_dir():
                 raise ResticPlaybookException(f"The repository path is not a valid directory: {repository_uri.path}")
 
-            repository_name = repository_json.get(self.__format.REPOSITORIES_NAME_KEY, repository_uri.repository_name)
-            if repository_name in self.__repositories:
-                raise ResticPlaybookException(f"The repository \"{repository_name}\" already exists!"
+            repository_id = repository_json.get(self.__format.REPOSITORIES_ID_KEY, repository_uri.repository_name)
+            if repository_id in self.__repositories:
+                raise ResticPlaybookException(f"The repository \"{repository_id}\" already exists!"
                                               f" This might be a duplicate repository."
-                                              f" If not, please define a unique name for it.")
+                                              f" If not, please define a unique id for it.")
 
             password_value_from_playbook = repository_json.get(self.__format.REPOSITORIES_PASSWORD_KEY, None)
-            repository_password = self.__resolve_repository_password(repository_name, password_value_from_playbook)
+            repository_password = self.__resolve_repository_password(repository_id, password_value_from_playbook)
 
-            repository = ResticRepository(repository_name, repository_uri, repository_password)
-            self.__repositories[repository_name] = repository
+            repository = ResticRepository(repository_id, repository_uri, repository_password)
+            self.__repositories[repository_id] = repository
 
-    def __resolve_repository_password(self, repository_name: str, password_value: str | None) -> str:
+    def __resolve_repository_password(self, repository_id: str, password_value: str | None) -> str:
         if not password_value:
             if self.__no_interaction:
-                raise ResticPlaybookException(f"No password was provided for repository \"{repository_name}\"")
-            return getpass.getpass(f"Enter password for restic repository \"{repository_name}\": ")
+                raise ResticPlaybookException(f"No password was provided for repository \"{repository_id}\"")
+            return getpass.getpass(f"Enter password for restic repository \"{repository_id}\": ")
 
         if not password_value.lower().startswith(self.__format.REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX):
             return password_value
@@ -127,7 +127,7 @@ class ResticPlaybookParser(PlaybookParser):
         password_environment_variable = password_value[len(self.__format.REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX):]
         if password_environment_variable not in os.environ:
             raise ResticPlaybookException(f"Environment variable \"{password_environment_variable}\""
-                                          f" for repository \"{repository_name}\" is not defined!")
+                                          f" for repository \"{repository_id}\" is not defined!")
         return os.environ[password_environment_variable]
 
     def __parse_steps_json(self, steps_json: JsonList) -> None:
@@ -136,9 +136,9 @@ class ResticPlaybookParser(PlaybookParser):
             step = step_parser.parse(step_json)
             self.__steps.append(step)
 
-    def __repository_lookup(self, repository_name: str) -> ResticRepository:
-        if repository_name in self.__repositories:
-            return self.__repositories[repository_name]
+    def __repository_lookup(self, repository_id: str) -> ResticRepository:
+        if repository_id in self.__repositories:
+            return self.__repositories[repository_id]
 
         raise ResticPlaybookException(
-            f"Unknown repository: \"{repository_name}\". The known repositories are: {list(self.__repositories.keys())}")
+            f"Unknown repository: \"{repository_id}\". The known repositories are: {list(self.__repositories.keys())}")

@@ -10,7 +10,7 @@ class ResticPlaybookFormat(PlaybookFormat):
     It contains constants that can be used during parsing.
     """
     REPOSITORIES_KEY = "repositories"
-    REPOSITORIES_NAME_KEY = "name"
+    REPOSITORIES_ID_KEY = "id"
     REPOSITORIES_URI_KEY = "uri"
     REPOSITORIES_PASSWORD_KEY = "password"
     REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX = "env:"

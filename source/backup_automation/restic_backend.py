@@ -44,7 +44,7 @@ class ResticBackend(Backend):
         Link: https://restic.readthedocs.io/en/stable/040_backup.html
         """
         log_tags_part = f" with tags [{", ".join(tags)}]" if tags else ""
-        self.__logger.info(f"Backing up \"{source_path}\" to repository \"{repository.name}\"{log_tags_part}")
+        self.__logger.info(f"Backing up \"{source_path}\" to repository \"{repository.id}\"{log_tags_part}")
 
         command_tags_part = []
         for tag in tags:

@@ -36,8 +36,8 @@ class ResticPlaybookStepParser:
                 raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
 
     def __parse_backup_step(self, step_json: JsonDict) -> ResticPlaybookBackupStep:
-        repository_name = step_json[ResticPlaybookBackupStep.REPOSITORY_KEY]
-        repository = self.__repository_lookup(repository_name)
+        repository_id = step_json[ResticPlaybookBackupStep.REPOSITORY_KEY]
+        repository = self.__repository_lookup(repository_id)
 
         source_path = pathlib.Path(step_json[ResticPlaybookBackupStep.SOURCE_PATH_KEY])
         if not source_path.is_dir():
@@ -50,12 +50,11 @@ class ResticPlaybookStepParser:
         return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags))
 
     def __parse_copy_step(self, step_json: JsonDict) -> ResticPlaybookCopyStep:
-        source_repository_name = step_json[ResticPlaybookCopyStep.SOURCE_REPOSITORY_KEY]
-        source_repository = self.__repository_lookup(source_repository_name)
+        source_repository_id = step_json[ResticPlaybookCopyStep.SOURCE_REPOSITORY_KEY]
+        source_repository = self.__repository_lookup(source_repository_id)
 
-        target_repository_name = step_json[ResticPlaybookCopyStep.TARGET_REPOSITORY_KEY]
-        target_repository = self.__repository_lookup(target_repository_name)
-
+        target_repository_id = step_json[ResticPlaybookCopyStep.TARGET_REPOSITORY_KEY]
+        target_repository = self.__repository_lookup(target_repository_id)
         if source_repository == target_repository:
             raise ResticPlaybookException("The source and target repositories cannot be the same!")
 
