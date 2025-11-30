@@ -4,7 +4,7 @@ import pathlib
 
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
-from backup_automation.restic import Restic
+from backup_automation.restic_backend import ResticBackend
 from backup_automation.restic_playbook import ResticPlaybook
 from backup_automation.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic_playbook_format import ResticPlaybookFormat
@@ -23,9 +23,9 @@ class ResticPlaybookParser(PlaybookParser):
     Class to represent a restic specific playbook parser.
     """
     def __init__(self,
-                 backup_backend: Restic,
+                 backend: ResticBackend,
                  playbook_parser_settings: PlaybookParserSettings):
-        self.__backup_backend = backup_backend
+        self.__backend = backend
         self.__no_interaction = playbook_parser_settings.no_interaction
         self.__playbook_path: pathlib.Path | None = None
         self.__repositories: dict[str, ResticRepository] = {}
@@ -131,7 +131,7 @@ class ResticPlaybookParser(PlaybookParser):
         return os.environ[password_environment_variable]
 
     def __parse_steps_json(self, steps_json: JsonList) -> None:
-        step_parser = ResticPlaybookStepParser(self.__backup_backend, self.__repository_lookup)
+        step_parser = ResticPlaybookStepParser(self.__backend, self.__repository_lookup)
         for step_json in steps_json:
             step = step_parser.parse(step_json)
             self.__steps.append(step)

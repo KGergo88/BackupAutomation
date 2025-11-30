@@ -2,13 +2,13 @@ import logging
 import pathlib
 import subprocess
 
-from backup_automation.backup_backend import BackupBackend, BackupBackendSettings
+from backup_automation.backend import Backend, BackendSettings
 from backup_automation.restic_exception import ResticException
 from backup_automation.restic_repository import ResticRepository
 from backup_automation.temporary_environment_variables import TemporaryEnvironmentVariables
 
 
-class Restic(BackupBackend):
+class ResticBackend(Backend):
     """
     Class that represents the restic backup software.
     """
@@ -18,7 +18,7 @@ class Restic(BackupBackend):
     RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_FROM_PASSWORD"
 
     def __init__(self,
-                 settings: BackupBackendSettings,
+                 settings: BackendSettings,
                  logger: logging.Logger = logging.getLogger(__name__)):
         self.__logger = logger
 
@@ -28,13 +28,15 @@ class Restic(BackupBackend):
 
         self.__verbose = settings.verbose
 
-        self.__logger.info("Looking for %s", Restic.RESTIC_EXECUTABLE)
+        self.__logger.info("Looking for %s", ResticBackend.RESTIC_EXECUTABLE)
         command = [
-            Restic.RESTIC_EXECUTABLE,
+            ResticBackend.RESTIC_EXECUTABLE,
             "version"
         ]
+        custom_error_message = (f"Could not find {ResticBackend.RESTIC_EXECUTABLE}!"
+                                f" Please install it from {ResticBackend.RESTIC_URL}")
         self.__execute_command(command,
-                               f"Could not find {Restic.RESTIC_EXECUTABLE}! Please install it from {Restic.RESTIC_URL}")
+                               custom_error_message)
 
     def backup(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...] = ()) -> None:
         """
@@ -54,7 +56,7 @@ class Restic(BackupBackend):
             command_verbose_part.append("--verbose")
 
         command = [
-            Restic.RESTIC_EXECUTABLE,
+            ResticBackend.RESTIC_EXECUTABLE,
             "backup",
             "--repo", str(repository.uri),
             *command_verbose_part,
@@ -63,7 +65,7 @@ class Restic(BackupBackend):
         ]
 
         environment_variables = {
-            Restic.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: repository.password
+            ResticBackend.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: repository.password
         }
         with TemporaryEnvironmentVariables(environment_variables):
             self.__execute_command(command)
@@ -78,7 +80,7 @@ class Restic(BackupBackend):
             command_verbose_part.append("--verbose")
 
         command = [
-            Restic.RESTIC_EXECUTABLE,
+            ResticBackend.RESTIC_EXECUTABLE,
             "copy",
             "--from-repo", str(source_repository.uri),
             "--repo", str(target_repository.uri),
@@ -86,8 +88,8 @@ class Restic(BackupBackend):
         ]
 
         environment_variables = {
-            Restic.RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE: source_repository.password,
-            Restic.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: target_repository.password
+            ResticBackend.RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE: source_repository.password,
+            ResticBackend.RESTIC_PASSWORD_ENVIRONMENT_VARIABLE: target_repository.password
         }
         with TemporaryEnvironmentVariables(environment_variables):
             self.__execute_command(command)

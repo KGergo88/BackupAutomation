@@ -11,7 +11,7 @@ class ResticPlaybook(Playbook):
 
     def execute(self) -> None:
         """
-        Execute the playbook with the given backup backend.
+        Execute the playbook with the given backend.
         """
         for step in self.__steps:
             step.execute()

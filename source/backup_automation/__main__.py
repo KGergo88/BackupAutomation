@@ -3,7 +3,7 @@ import logging
 import pathlib
 
 from backup_automation import __version__
-from backup_automation.backup_backend import BackupBackendSettings
+from backup_automation.backend import BackendSettings
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParserSettings
 from backup_automation.playbook_parser_factory import PlaybookParserFactory
@@ -26,9 +26,9 @@ def main() -> None:
     playbook_type = Playbook.determine_playbook_type(args.playbook)
 
     playbook_parser_settings = PlaybookParserSettings(no_interaction = args.no_interaction)
-    backup_backend_settings = BackupBackendSettings(dry_mode = args.dry_mode, verbose = args.verbose)
+    backend_settings = BackendSettings(dry_mode = args.dry_mode, verbose = args.verbose)
 
-    playbook_parser = PlaybookParserFactory.create(playbook_type, playbook_parser_settings, backup_backend_settings)
+    playbook_parser = PlaybookParserFactory.create(playbook_type, playbook_parser_settings, backend_settings)
 
     logger.info("Parsing playbook: %s", args.playbook)
     playbook = playbook_parser.parse(args.playbook)

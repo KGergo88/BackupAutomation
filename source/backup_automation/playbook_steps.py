@@ -7,10 +7,10 @@ class PlaybookStep(ABC):
     # theoretically be replaced by a function, but implementing it like this helps with naming.
     """
     Abstract class to represent a playbook step.
-    Steps represent a specific action in a playbook that shall be done with the backup backend.
+    Steps represent a specific action in a playbook that shall be done with the backend.
     """
     @abstractmethod
     def execute(self) -> None:
         """
-        Execute the step with the given backup backend.
+        Execute the step with the given backend.
         """
