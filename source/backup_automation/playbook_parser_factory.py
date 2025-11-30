@@ -1,7 +1,7 @@
 from backup_automation.backend import BackendSettings
 from backup_automation.playbook import PlaybookType
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
-from backup_automation.restic import Restic
+from backup_automation.restic_backend import ResticBackend
 from backup_automation.restic_playbook_parser import ResticPlaybookParser
 
 
@@ -21,7 +21,7 @@ class PlaybookParserFactory:
         """
         match playbook_type:
             case PlaybookType.RESTIC:
-                backend = Restic(backend_settings)
+                backend = ResticBackend(backend_settings)
                 return ResticPlaybookParser(backend, playbook_parser_settings)
             case _:
                 raise ValueError(f"Unexpected playbook type: \"{playbook_type}\"")

@@ -4,7 +4,7 @@ import pathlib
 
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
-from backup_automation.restic import Restic
+from backup_automation.restic_backend import ResticBackend
 from backup_automation.restic_playbook import ResticPlaybook
 from backup_automation.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic_playbook_format import ResticPlaybookFormat
@@ -23,7 +23,7 @@ class ResticPlaybookParser(PlaybookParser):
     Class to represent a restic specific playbook parser.
     """
     def __init__(self,
-                 backend: Restic,
+                 backend: ResticBackend,
                  playbook_parser_settings: PlaybookParserSettings):
         self.__backend = backend
         self.__no_interaction = playbook_parser_settings.no_interaction

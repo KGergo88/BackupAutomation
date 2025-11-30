@@ -1,7 +1,7 @@
 import pathlib
 from typing import Callable
 
-from backup_automation.restic import Restic
+from backup_automation.restic_backend import ResticBackend
 from backup_automation.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic_playbook_steps import ResticPlaybookStep, ResticPlaybookBackupStep, ResticPlaybookCopyStep
 from backup_automation.restic_repository import ResticRepository
@@ -18,7 +18,7 @@ class ResticPlaybookStepParser:
     STEPS_COMMAND_BACKUP = "backup"
     STEPS_COMMAND_COPY = "copy"
 
-    def __init__(self, backend: Restic, repository_lookup: Callable[[str], ResticRepository]):
+    def __init__(self, backend: ResticBackend, repository_lookup: Callable[[str], ResticRepository]):
         self.__backend = backend
         self.__repository_lookup = repository_lookup
 

@@ -2,7 +2,7 @@ import pathlib
 from abc import ABC
 
 from backup_automation.playbook_steps import PlaybookStep
-from backup_automation.restic import Restic
+from backup_automation.restic_backend import ResticBackend
 from backup_automation.restic_repository import ResticRepository
 
 
@@ -28,7 +28,7 @@ class ResticPlaybookBackupStep(ResticPlaybookStep):
     TAGS_KEY = "tags"
 
     def __init__(self,
-                 backend: Restic,
+                 backend: ResticBackend,
                  repository: ResticRepository,
                  source_path: pathlib.Path,
                  tags: tuple[str, ...]):
@@ -53,7 +53,7 @@ class ResticPlaybookCopyStep(ResticPlaybookStep):
     TARGET_REPOSITORY_KEY = "target_repository"
 
     def __init__(self,
-                 backend: Restic,
+                 backend: ResticBackend,
                  source_repository: ResticRepository,
                  target_repository: ResticRepository):
         super().__init__()
