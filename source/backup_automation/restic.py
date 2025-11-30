@@ -2,7 +2,7 @@ import logging
 import pathlib
 import subprocess
 
-from backup_automation.backup_backend import BackupBackend
+from backup_automation.backup_backend import BackupBackend, BackupBackendSettings
 from backup_automation.restic_exception import ResticException
 from backup_automation.restic_repository import ResticRepository
 from backup_automation.temporary_environment_variables import TemporaryEnvironmentVariables
@@ -18,17 +18,15 @@ class Restic(BackupBackend):
     RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_FROM_PASSWORD"
 
     def __init__(self,
-                 dry_mode: bool = False,
-                 verbose: bool = False,
+                 settings: BackupBackendSettings,
                  logger: logging.Logger = logging.getLogger(__name__)):
         self.__logger = logger
 
-        self.__dry_mode = dry_mode
+        self.__dry_mode = settings.dry_mode
         if self.__dry_mode:
             self.__logger.info("Dry mode was requested, commands will only be logged and not executed!")
 
-        self.__verbose = verbose
-
+        self.__verbose = settings.verbose
 
         self.__logger.info("Looking for %s", Restic.RESTIC_EXECUTABLE)
         command = [
@@ -38,7 +36,7 @@ class Restic(BackupBackend):
         self.__execute_command(command,
                                f"Could not find {Restic.RESTIC_EXECUTABLE}! Please install it from {Restic.RESTIC_URL}")
 
-    def backup(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...] = ()):
+    def backup(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...] = ()) -> None:
         """
         Backup the source path content to the repository and apply the tags to the snapshots.
         Link: https://restic.readthedocs.io/en/stable/040_backup.html
@@ -70,7 +68,7 @@ class Restic(BackupBackend):
         with TemporaryEnvironmentVariables(environment_variables):
             self.__execute_command(command)
 
-    def copy(self, source_repository: ResticRepository, target_repository: ResticRepository):
+    def copy(self, source_repository: ResticRepository, target_repository: ResticRepository) -> None:
         """
         Copy snapshots from the source repository to the target repository.
         Link: https://restic.readthedocs.io/en/stable/045_working_with_repos.html#copying-snapshots-between-repositories
@@ -94,7 +92,7 @@ class Restic(BackupBackend):
         with TemporaryEnvironmentVariables(environment_variables):
             self.__execute_command(command)
 
-    def __execute_command(self, command: list[str], custom_error_message: str | None = None):
+    def __execute_command(self, command: list[str], custom_error_message: str | None = None) -> None:
         self.__logger.info(f"Executing command: \"{" ".join(command)}\"")
         if self.__dry_mode:
             return

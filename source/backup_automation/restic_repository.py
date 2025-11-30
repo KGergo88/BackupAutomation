@@ -35,10 +35,10 @@ class ResticRepositoryUri:
                 self.__scheme = ResticRepositoryUriScheme.LOCAL
                 self.__path = raw_uri
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"ResticRepositoryUri({str(self.__uri)})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.uri
 
     def is_sftp(self) -> bool:
@@ -84,7 +84,7 @@ class ResticRepository:
         self.__uri = repository_uri
         self.__password = repository_password
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"ResticRepository({self.__uri})"
 
     @property

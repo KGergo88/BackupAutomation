@@ -1,7 +1,17 @@
 import pathlib
+
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 from backup_automation.playbook import Playbook
+
+
+@dataclass(frozen=True)
+class PlaybookParserSettings:
+    """
+    Contains the settings available for playbook parsers.
+    """
+    no_interaction: bool
 
 
 class PlaybookParser(ABC):

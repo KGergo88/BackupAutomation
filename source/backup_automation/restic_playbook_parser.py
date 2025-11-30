@@ -2,15 +2,16 @@ import getpass
 import os
 import pathlib
 
-from typing import Any
-
-from backup_automation.playbook_parser import PlaybookParser
+from backup_automation.playbook import Playbook
+from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
+from backup_automation.restic import Restic
 from backup_automation.restic_playbook import ResticPlaybook
 from backup_automation.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic_playbook_format import ResticPlaybookFormat
 from backup_automation.restic_playbook_step_parser import ResticPlaybookStepParser
 from backup_automation.restic_playbook_steps import ResticPlaybookStep
 from backup_automation.restic_repository import ResticRepository, ResticRepositoryUri
+from backup_automation.typehints import JsonDict, JsonList
 from backup_automation.utility import read_json_file
 
 
@@ -21,14 +22,17 @@ class ResticPlaybookParser(PlaybookParser):
     """
     Class to represent a restic specific playbook parser.
     """
-    def __init__(self, no_interaction: bool = False):
-        self.__no_interaction = no_interaction
-        self.__playbook_path: pathlib.Path|None = None
+    def __init__(self,
+                 backup_backend: Restic,
+                 playbook_parser_settings: PlaybookParserSettings):
+        self.__backup_backend = backup_backend
+        self.__no_interaction = playbook_parser_settings.no_interaction
+        self.__playbook_path: pathlib.Path | None = None
         self.__repositories: dict[str, ResticRepository] = {}
         self.__steps: list[ResticPlaybookStep] = []
         self.__format = ResticPlaybookFormat()
 
-    def parse(self, playbook_path: pathlib.Path) -> ResticPlaybook:
+    def parse(self, playbook_path: pathlib.Path) -> Playbook:
         """
         Parses a playbook from the playbook_path into a ResticPlaybook object.
         """
@@ -40,7 +44,7 @@ class ResticPlaybookParser(PlaybookParser):
 
         return ResticPlaybook(tuple(self.__steps))
 
-    def __check_playbook_json(self, playbook_json: Any):
+    def __check_playbook_json(self, playbook_json: JsonDict) -> None:
         if not isinstance(playbook_json, dict):
             raise ResticPlaybookException("The playbook is not a valid JSON dictionary!")
 
@@ -70,8 +74,8 @@ class ResticPlaybookParser(PlaybookParser):
         for index, step in enumerate(playbook_json[self.__format.STEPS_KEY]):
             self.__check_playbook_step_json(step, index)
 
-    def __check_playbook_repository_json(self, playbook_repository_json: dict, repository_index: int):
-        def __check_for_key(repository_json: dict, index: int, expected_keys: list[str]):
+    def __check_playbook_repository_json(self, playbook_repository_json: JsonDict, repository_index: int) -> None:
+        def __check_for_key(repository_json: JsonDict, index: int, expected_keys: list[str]) -> None:
             for expected_key in expected_keys:
                 if expected_key not in repository_json:
                     raise ResticPlaybookException(f"Missing \"{expected_key}\" for repository #{index + 1}")
@@ -79,19 +83,19 @@ class ResticPlaybookParser(PlaybookParser):
         __check_for_key(playbook_repository_json, repository_index, [self.__format.REPOSITORIES_URI_KEY])
 
     @staticmethod
-    def __check_playbook_step_json(playbook_step_json: dict, step_index: int):
-        def __check_for_key(step_json: dict, index: int, expected_keys: list[str]):
+    def __check_playbook_step_json(playbook_step_json: JsonDict, step_index: int) -> None:
+        def __check_for_key(step_json: JsonDict, index: int, expected_keys: list[str]) -> None:
             for expected_key in expected_keys:
                 if expected_key not in step_json:
                     raise ResticPlaybookException(f"Missing \"{expected_key}\" for step #{index + 1}")
 
         __check_for_key(playbook_step_json, step_index, [ResticPlaybookStep.STEPS_COMMAND_KEY])
 
-    def __parse_playbook_json(self, playbook_json: dict):
+    def __parse_playbook_json(self, playbook_json: JsonDict) -> None:
         self.__parse_repositories_json(playbook_json[self.__format.REPOSITORIES_KEY])
         self.__parse_steps_json(playbook_json[self.__format.STEPS_KEY])
 
-    def __parse_repositories_json(self, repositories_json: list):
+    def __parse_repositories_json(self, repositories_json: JsonList) -> None:
         for repository_json in repositories_json:
             raw_repository_uri = repository_json[self.__format.REPOSITORIES_URI_KEY]
             repository_uri = ResticRepositoryUri(raw_repository_uri)
@@ -111,7 +115,7 @@ class ResticPlaybookParser(PlaybookParser):
             repository = ResticRepository(repository_name, repository_uri, repository_password)
             self.__repositories[repository_name] = repository
 
-    def __resolve_repository_password(self, repository_name, password_value: str | None) -> str:
+    def __resolve_repository_password(self, repository_name: str, password_value: str | None) -> str:
         if not password_value:
             if self.__no_interaction:
                 raise ResticPlaybookException(f"No password was provided for repository \"{repository_name}\"")
@@ -126,8 +130,8 @@ class ResticPlaybookParser(PlaybookParser):
                                           f" for repository \"{repository_name}\" is not defined!")
         return os.environ[password_environment_variable]
 
-    def __parse_steps_json(self, steps_json: list):
-        step_parser = ResticPlaybookStepParser(self.__repository_lookup)
+    def __parse_steps_json(self, steps_json: JsonList) -> None:
+        step_parser = ResticPlaybookStepParser(self.__backup_backend, self.__repository_lookup)
         for step_json in steps_json:
             step = step_parser.parse(step_json)
             self.__steps.append(step)

@@ -3,12 +3,13 @@ import logging
 import pathlib
 
 from backup_automation import __version__
-from backup_automation.backup_backend_factory import BackupBackendFactory
+from backup_automation.backup_backend import BackupBackendSettings
 from backup_automation.playbook import Playbook
+from backup_automation.playbook_parser import PlaybookParserSettings
 from backup_automation.playbook_parser_factory import PlaybookParserFactory
 
 
-def main():
+def main() -> None:
     """
     The main function of the package.
     """
@@ -20,22 +21,24 @@ def main():
     args = parse_arguments()
 
     logger.info("Starting backup automation")
-
     logger.info("Received arguments: %s", args)
 
     playbook_type = Playbook.determine_playbook_type(args.playbook)
-    playbook_parser = PlaybookParserFactory.create(playbook_type, args.no_interaction)
-    backup_backend = BackupBackendFactory.create(playbook_type, args.dry_mode, args.verbose)
+
+    playbook_parser_settings = PlaybookParserSettings(no_interaction = args.no_interaction)
+    backup_backend_settings = BackupBackendSettings(dry_mode = args.dry_mode, verbose = args.verbose)
+
+    playbook_parser = PlaybookParserFactory.create(playbook_type, playbook_parser_settings, backup_backend_settings)
 
     logger.info("Parsing playbook: %s", args.playbook)
     playbook = playbook_parser.parse(args.playbook)
 
     logger.info("Executing playbook: %s", playbook)
-    playbook.execute(backup_backend)
+    playbook.execute()
     logger.info("Finished executing playbook!")
 
 
-def parse_arguments():
+def parse_arguments() -> argparse.Namespace:
     """
     Function to parse the command line arguments.
     """
