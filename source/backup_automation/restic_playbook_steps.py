@@ -13,7 +13,6 @@ class ResticPlaybookStep(PlaybookStep, ABC):
     """
     Abstract class to represent a restic specific playbook step.
     """
-    STEPS_COMMAND_KEY = "command"
 
 
 class ResticPlaybookBackupStep(ResticPlaybookStep):
@@ -23,10 +22,6 @@ class ResticPlaybookBackupStep(ResticPlaybookStep):
     """
     Class to represent the restic specific backup playbook step.
     """
-    REPOSITORY_KEY = "repository"
-    SOURCE_PATH_KEY = "source_path"
-    TAGS_KEY = "tags"
-
     def __init__(self,
                  backend: ResticBackend,
                  repository: ResticRepository,
@@ -49,9 +44,6 @@ class ResticPlaybookCopyStep(ResticPlaybookStep):
     """
     Class to represent the restic specific copy playbook step.
     """
-    SOURCE_REPOSITORY_KEY = "source_repository"
-    TARGET_REPOSITORY_KEY = "target_repository"
-
     def __init__(self,
                  backend: ResticBackend,
                  source_repository: ResticRepository,
