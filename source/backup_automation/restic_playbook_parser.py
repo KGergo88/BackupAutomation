@@ -82,14 +82,13 @@ class ResticPlaybookParser(PlaybookParser):
 
         __check_for_key(playbook_repository_json, repository_index, [self.__format.REPOSITORIES_URI_KEY])
 
-    @staticmethod
-    def __check_playbook_step_json(playbook_step_json: JsonDict, step_index: int) -> None:
+    def __check_playbook_step_json(self, playbook_step_json: JsonDict, step_index: int) -> None:
         def __check_for_key(step_json: JsonDict, index: int, expected_keys: list[str]) -> None:
             for expected_key in expected_keys:
                 if expected_key not in step_json:
                     raise ResticPlaybookException(f"Missing \"{expected_key}\" for step #{index + 1}")
 
-        __check_for_key(playbook_step_json, step_index, [ResticPlaybookStep.STEPS_COMMAND_KEY])
+        __check_for_key(playbook_step_json, step_index, [self.__format.STEPS_COMMAND_KEY])
 
     def __parse_playbook_json(self, playbook_json: JsonDict) -> None:
         self.__parse_repositories_json(playbook_json[self.__format.REPOSITORIES_KEY])
