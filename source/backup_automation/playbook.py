@@ -20,7 +20,7 @@ class Playbook(ABC):
     """
     Abstract class to represent a playbook.
     Playbooks orchestrate the backup operations.
-    They contain steps and that execute an action on the BackupBackend.
+    They contain steps that execute an action on the Backend.
     """
     @abstractmethod
     def __init__(self, steps: tuple[PlaybookStep]) -> None:
@@ -29,7 +29,7 @@ class Playbook(ABC):
     @abstractmethod
     def execute(self) -> None:
         """
-        Execute the playbook with the given backup backend.
+        Execute the playbook with the given backend.
         """
 
     @staticmethod

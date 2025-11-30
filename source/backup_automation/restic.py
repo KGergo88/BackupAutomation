@@ -2,13 +2,13 @@ import logging
 import pathlib
 import subprocess
 
-from backup_automation.backup_backend import BackupBackend, BackupBackendSettings
+from backup_automation.backend import Backend, BackendSettings
 from backup_automation.restic_exception import ResticException
 from backup_automation.restic_repository import ResticRepository
 from backup_automation.temporary_environment_variables import TemporaryEnvironmentVariables
 
 
-class Restic(BackupBackend):
+class Restic(Backend):
     """
     Class that represents the restic backup software.
     """
@@ -18,7 +18,7 @@ class Restic(BackupBackend):
     RESTIC_FROM_PASSWORD_ENVIRONMENT_VARIABLE = "RESTIC_FROM_PASSWORD"
 
     def __init__(self,
-                 settings: BackupBackendSettings,
+                 settings: BackendSettings,
                  logger: logging.Logger = logging.getLogger(__name__)):
         self.__logger = logger
 

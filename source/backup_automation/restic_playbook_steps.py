@@ -28,18 +28,18 @@ class ResticPlaybookBackupStep(ResticPlaybookStep):
     TAGS_KEY = "tags"
 
     def __init__(self,
-                 backup_backend: Restic,
+                 backend: Restic,
                  repository: ResticRepository,
                  source_path: pathlib.Path,
                  tags: tuple[str, ...]):
         super().__init__()
-        self.__backup_backend = backup_backend
+        self.__backend = backend
         self.__repository = repository
         self.__source_path = source_path
         self.__tags = tags
 
     def execute(self) -> None:
-        self.__backup_backend.backup(self.__repository, self.__source_path, self.__tags)
+        self.__backend.backup(self.__repository, self.__source_path, self.__tags)
 
 
 class ResticPlaybookCopyStep(ResticPlaybookStep):
@@ -53,13 +53,13 @@ class ResticPlaybookCopyStep(ResticPlaybookStep):
     TARGET_REPOSITORY_KEY = "target_repository"
 
     def __init__(self,
-                 backup_backend: Restic,
+                 backend: Restic,
                  source_repository: ResticRepository,
                  target_repository: ResticRepository):
         super().__init__()
-        self.__backup_backend = backup_backend
+        self.__backend = backend
         self.__source_repository = source_repository
         self.__target_repository = target_repository
 
     def execute(self) -> None:
-        self.__backup_backend.copy(self.__source_repository, self.__target_repository)
+        self.__backend.copy(self.__source_repository, self.__target_repository)
