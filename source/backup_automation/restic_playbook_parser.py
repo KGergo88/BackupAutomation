@@ -2,8 +2,7 @@ import getpass
 import os
 import pathlib
 
-from typing import Any, cast
-
+from typing import cast
 from backup_automation.backup_backend import BackupBackend
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
@@ -43,7 +42,7 @@ class ResticPlaybookParser(PlaybookParser):
 
         return cast(Playbook[BackupBackend], ResticPlaybook(tuple(self.__steps)))
 
-    def __check_playbook_json(self, playbook_json: Any) -> None:
+    def __check_playbook_json(self, playbook_json: JsonDict) -> None:
         if not isinstance(playbook_json, dict):
             raise ResticPlaybookException("The playbook is not a valid JSON dictionary!")
 
