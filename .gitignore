@@ -2,6 +2,7 @@
 /.idea
 
 # Python related
+/.tox
 /venv
 /__pycache__
 *.egg-info
