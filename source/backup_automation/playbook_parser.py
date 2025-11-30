@@ -3,7 +3,6 @@ import pathlib
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from backup_automation.backup_backend import BackupBackend
 from backup_automation.playbook import Playbook
 
 
@@ -24,7 +23,7 @@ class PlaybookParser(ABC):
     Playbook parsers read playbook files from the disk, check them and parse them into an object.
     """
     @abstractmethod
-    def parse(self, playbook_path: pathlib.Path) -> Playbook[BackupBackend]:
+    def parse(self, playbook_path: pathlib.Path) -> Playbook:
         """
         Parses a playbook from the playbook_path into a Playbook object.
         """

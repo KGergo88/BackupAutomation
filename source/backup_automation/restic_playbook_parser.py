@@ -2,11 +2,9 @@ import getpass
 import os
 import pathlib
 
-from typing import Any, cast
-
-from backup_automation.backup_backend import BackupBackend
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
+from backup_automation.restic import Restic
 from backup_automation.restic_playbook import ResticPlaybook
 from backup_automation.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic_playbook_format import ResticPlaybookFormat
@@ -24,14 +22,17 @@ class ResticPlaybookParser(PlaybookParser):
     """
     Class to represent a restic specific playbook parser.
     """
-    def __init__(self, settings: PlaybookParserSettings):
-        self.__no_interaction = settings.no_interaction
-        self.__playbook_path: pathlib.Path|None = None
+    def __init__(self,
+                 backup_backend: Restic,
+                 playbook_parser_settings: PlaybookParserSettings):
+        self.__backup_backend = backup_backend
+        self.__no_interaction = playbook_parser_settings.no_interaction
+        self.__playbook_path: pathlib.Path | None = None
         self.__repositories: dict[str, ResticRepository] = {}
         self.__steps: list[ResticPlaybookStep] = []
         self.__format = ResticPlaybookFormat()
 
-    def parse(self, playbook_path: pathlib.Path) -> Playbook[BackupBackend]:
+    def parse(self, playbook_path: pathlib.Path) -> Playbook:
         """
         Parses a playbook from the playbook_path into a ResticPlaybook object.
         """
@@ -41,9 +42,9 @@ class ResticPlaybookParser(PlaybookParser):
         self.__check_playbook_json(playbook_json)
         self.__parse_playbook_json(playbook_json)
 
-        return cast(Playbook[BackupBackend], ResticPlaybook(tuple(self.__steps)))
+        return ResticPlaybook(tuple(self.__steps))
 
-    def __check_playbook_json(self, playbook_json: Any) -> None:
+    def __check_playbook_json(self, playbook_json: JsonDict) -> None:
         if not isinstance(playbook_json, dict):
             raise ResticPlaybookException("The playbook is not a valid JSON dictionary!")
 
@@ -130,7 +131,7 @@ class ResticPlaybookParser(PlaybookParser):
         return os.environ[password_environment_variable]
 
     def __parse_steps_json(self, steps_json: JsonList) -> None:
-        step_parser = ResticPlaybookStepParser(self.__repository_lookup)
+        step_parser = ResticPlaybookStepParser(self.__backup_backend, self.__repository_lookup)
         for step_json in steps_json:
             step = step_parser.parse(step_json)
             self.__steps.append(step)

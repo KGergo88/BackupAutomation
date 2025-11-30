@@ -4,7 +4,6 @@ import pathlib
 
 from backup_automation import __version__
 from backup_automation.backup_backend import BackupBackendSettings
-from backup_automation.backup_backend_factory import BackupBackendFactory
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParserSettings
 from backup_automation.playbook_parser_factory import PlaybookParserFactory
@@ -27,16 +26,15 @@ def main() -> None:
     playbook_type = Playbook.determine_playbook_type(args.playbook)
 
     playbook_parser_settings = PlaybookParserSettings(no_interaction = args.no_interaction)
-    playbook_parser = PlaybookParserFactory.create(playbook_type, playbook_parser_settings)
-
     backup_backend_settings = BackupBackendSettings(dry_mode = args.dry_mode, verbose = args.verbose)
-    backup_backend = BackupBackendFactory.create(playbook_type, backup_backend_settings)
+
+    playbook_parser = PlaybookParserFactory.create(playbook_type, playbook_parser_settings, backup_backend_settings)
 
     logger.info("Parsing playbook: %s", args.playbook)
     playbook = playbook_parser.parse(args.playbook)
 
     logger.info("Executing playbook: %s", playbook)
-    playbook.execute(backup_backend)
+    playbook.execute()
     logger.info("Finished executing playbook!")
 
 
