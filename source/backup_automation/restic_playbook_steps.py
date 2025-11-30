@@ -6,7 +6,7 @@ from backup_automation.restic import Restic
 from backup_automation.restic_repository import ResticRepository
 
 
-class ResticPlaybookStep(PlaybookStep[Restic], ABC):
+class ResticPlaybookStep(PlaybookStep, ABC):
     # pylint: disable=too-few-public-methods
     # The class does not need more methods at the moment. This means that the class could
     # theoretically be replaced by a function, but implementing it like this helps with naming.
@@ -27,14 +27,19 @@ class ResticPlaybookBackupStep(ResticPlaybookStep):
     SOURCE_PATH_KEY = "source_path"
     TAGS_KEY = "tags"
 
-    def __init__(self, repository: ResticRepository, source_path: pathlib.Path, tags: tuple[str, ...]):
+    def __init__(self,
+                 backup_backend: Restic,
+                 repository: ResticRepository,
+                 source_path: pathlib.Path,
+                 tags: tuple[str, ...]):
         super().__init__()
+        self.__backup_backend = backup_backend
         self.__repository = repository
         self.__source_path = source_path
         self.__tags = tags
 
-    def execute(self, backup_backend: Restic) -> None:
-        backup_backend.backup(self.__repository, self.__source_path, self.__tags)
+    def execute(self) -> None:
+        self.__backup_backend.backup(self.__repository, self.__source_path, self.__tags)
 
 
 class ResticPlaybookCopyStep(ResticPlaybookStep):
@@ -47,10 +52,14 @@ class ResticPlaybookCopyStep(ResticPlaybookStep):
     SOURCE_REPOSITORY_KEY = "source_repository"
     TARGET_REPOSITORY_KEY = "target_repository"
 
-    def __init__(self, source_repository: ResticRepository, target_repository: ResticRepository):
+    def __init__(self,
+                 backup_backend: Restic,
+                 source_repository: ResticRepository,
+                 target_repository: ResticRepository):
         super().__init__()
+        self.__backup_backend = backup_backend
         self.__source_repository = source_repository
         self.__target_repository = target_repository
 
-    def execute(self, backup_backend: Restic) -> None:
-        backup_backend.copy(self.__source_repository, self.__target_repository)
+    def execute(self) -> None:
+        self.__backup_backend.copy(self.__source_repository, self.__target_repository)

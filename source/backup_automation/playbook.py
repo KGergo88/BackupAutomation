@@ -3,7 +3,6 @@ import pathlib
 from abc import ABC, abstractmethod
 from enum import auto, Enum
 
-from backup_automation.backup_backend import BackupBackend
 from backup_automation.playbook_exception import PlaybookException
 from backup_automation.playbook_format import PlaybookFormat
 from backup_automation.playbook_steps import PlaybookStep
@@ -17,18 +16,18 @@ class PlaybookType(Enum):
     RESTIC = auto()
 
 
-class Playbook[BackupBackendT: BackupBackend](ABC):
+class Playbook(ABC):
     """
     Abstract class to represent a playbook.
     Playbooks orchestrate the backup operations.
     They contain steps and that execute an action on the BackupBackend.
     """
     @abstractmethod
-    def __init__(self, steps: tuple[PlaybookStep[BackupBackendT]]) -> None:
+    def __init__(self, steps: tuple[PlaybookStep]) -> None:
         pass
 
     @abstractmethod
-    def execute(self, backup_backend: BackupBackendT) -> None:
+    def execute(self) -> None:
         """
         Execute the playbook with the given backup backend.
         """
