@@ -79,8 +79,8 @@ class ResticRepository:
     """
     Class to represent a restic repository.
     """
-    def __init__(self, repository_name: str, repository_uri: ResticRepositoryUri, repository_password: str):
-        self.__name = repository_name
+    def __init__(self, repository_id: str, repository_uri: ResticRepositoryUri, repository_password: str):
+        self.__id = repository_id
         self.__uri = repository_uri
         self.__password = repository_password
 
@@ -88,11 +88,11 @@ class ResticRepository:
         return f"ResticRepository({self.__uri})"
 
     @property
-    def name(self) -> str:
+    def id(self) -> str:
         """
-        The name of the repository.
+        The id of the repository.
         """
-        return self.__name
+        return self.__id
 
     @property
     def uri(self) -> ResticRepositoryUri:
