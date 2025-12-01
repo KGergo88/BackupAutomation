@@ -4,13 +4,13 @@ import pathlib
 
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
-from backup_automation.restic_backend import ResticBackend
-from backup_automation.restic_playbook import ResticPlaybook
-from backup_automation.restic_playbook_exception import ResticPlaybookException
-from backup_automation.restic_playbook_format import ResticPlaybookFormat
-from backup_automation.restic_playbook_step_parser import ResticPlaybookStepParser
-from backup_automation.restic_playbook_steps import ResticPlaybookStep
-from backup_automation.restic_repository import ResticRepository, ResticRepositoryUri
+from backup_automation.restic.restic_backend import ResticBackend
+from backup_automation.restic.restic_playbook import ResticPlaybook
+from backup_automation.restic.restic_playbook_exception import ResticPlaybookException
+from backup_automation.restic.restic_playbook_format import ResticPlaybookFormat
+from backup_automation.restic.restic_playbook_step_parser import ResticPlaybookStepParser
+from backup_automation.restic.restic_playbook_steps import ResticPlaybookStep
+from backup_automation.restic.restic_repository import ResticRepository, ResticRepositoryUri
 from backup_automation.typehints import JsonDict, JsonList
 from backup_automation.utility import read_json_file
 
