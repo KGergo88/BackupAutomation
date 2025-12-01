@@ -3,6 +3,8 @@ from backup_automation.restic_playbook_steps import ResticPlaybookStep
 
 
 class ResticPlaybook(Playbook):
+    # pylint: disable=too-few-public-methods
+    # The class does not need more methods at the moment.
     """
     Class to represent a restic specific playbook.
     """
