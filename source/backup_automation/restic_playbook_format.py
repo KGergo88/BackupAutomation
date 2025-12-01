@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from backup_automation.playbook_format import PlaybookFormat
 
 
-@dataclass
+@dataclass(frozen=True)
 class ResticPlaybookFormat(PlaybookFormat):
     """
     Class to define the restic specific playbook format.
