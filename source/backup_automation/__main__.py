@@ -45,7 +45,7 @@ def parse_arguments() -> argparse.Namespace:
                         help="Filepath of a playbook")
     parser.add_argument("--dry-mode",
                         action="store_true",
-                        help="Commands will be logged but not executed. No restic executable is needed.")
+                        help="Commands will be logged but not executed.")
     parser.add_argument("--no-interaction",
                         action="store_true",
                         help="No user interactions will be made. The program will fail if user input would be needed.")
