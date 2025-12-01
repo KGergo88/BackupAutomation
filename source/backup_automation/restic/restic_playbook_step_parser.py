@@ -1,11 +1,13 @@
 import pathlib
 from typing import Callable
 
-from backup_automation.restic_backend import ResticBackend
-from backup_automation.restic_playbook_exception import ResticPlaybookException
-from backup_automation.restic_playbook_format import ResticPlaybookFormat
-from backup_automation.restic_playbook_steps import ResticPlaybookStep, ResticPlaybookBackupStep, ResticPlaybookCopyStep
-from backup_automation.restic_repository import ResticRepository
+from backup_automation.restic.restic_backend import ResticBackend
+from backup_automation.restic.restic_playbook_exception import ResticPlaybookException
+from backup_automation.restic.restic_playbook_format import ResticPlaybookFormat
+from backup_automation.restic.restic_playbook_steps import (ResticPlaybookStep,
+                                                            ResticPlaybookBackupStep,
+                                                            ResticPlaybookCopyStep)
+from backup_automation.restic.restic_repository import ResticRepository
 from backup_automation.typehints import JsonDict
 
 

@@ -2,8 +2,8 @@ import pathlib
 from abc import ABC
 
 from backup_automation.playbook_steps import PlaybookStep
-from backup_automation.restic_backend import ResticBackend
-from backup_automation.restic_repository import ResticRepository
+from backup_automation.restic.restic_backend import ResticBackend
+from backup_automation.restic.restic_repository import ResticRepository
 
 
 class ResticPlaybookStep(PlaybookStep, ABC):

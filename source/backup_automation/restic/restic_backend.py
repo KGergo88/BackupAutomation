@@ -3,8 +3,8 @@ import pathlib
 import subprocess
 
 from backup_automation.backend import Backend, BackendSettings
-from backup_automation.restic_exception import ResticException
-from backup_automation.restic_repository import ResticRepository
+from backup_automation.restic.restic_exception import ResticException
+from backup_automation.restic.restic_repository import ResticRepository
 from backup_automation.temporary_environment_variables import TemporaryEnvironmentVariables
 
 

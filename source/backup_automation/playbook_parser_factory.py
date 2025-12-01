@@ -6,8 +6,8 @@ from backup_automation.backend import BackendSettings
 from backup_automation.playbook_exception import PlaybookException
 from backup_automation.playbook_format import PlaybookFormat
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
-from backup_automation.restic_backend import ResticBackend
-from backup_automation.restic_playbook_parser import ResticPlaybookParser
+from backup_automation.restic.restic_backend import ResticBackend
+from backup_automation.restic.restic_playbook_parser import ResticPlaybookParser
 from backup_automation.utility import read_json_file
 
 
