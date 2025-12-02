@@ -56,20 +56,20 @@ class ResticPlaybookParser(PlaybookParser):
                                           f"Expected: \"{self.__format.TYPE_VALUE_RESTIC}\"")
 
         if self.__format.REPOSITORIES_KEY not in playbook_json:
-            raise ResticPlaybookException(f"Missing \"{self.__format.REPOSITORIES_KEY} in playbook!")
+            raise ResticPlaybookException(f"Missing \"{self.__format.REPOSITORIES_KEY}\" in playbook!")
 
         if not playbook_json[self.__format.REPOSITORIES_KEY]:
             raise ResticPlaybookException(
-                f"No repositories defined in \"{self.__format.REPOSITORIES_KEY} in playbook!")
+                f"No repositories defined in \"{self.__format.REPOSITORIES_KEY}\" in playbook!")
 
         for index, repository in enumerate(playbook_json[self.__format.REPOSITORIES_KEY]):
             self.__check_playbook_repository_json(repository, index)
 
         if self.__format.STEPS_KEY not in playbook_json:
-            raise ResticPlaybookException(f"Missing {self.__format.STEPS_KEY} in playbook!")
+            raise ResticPlaybookException(f"Missing \"{self.__format.STEPS_KEY}\" in playbook!")
 
         if not playbook_json[self.__format.STEPS_KEY]:
-            raise ResticPlaybookException(f"No steps defined in \"{self.__format.STEPS_KEY} in playbook!")
+            raise ResticPlaybookException(f"No steps defined in \"{self.__format.STEPS_KEY}\" in playbook!")
 
         for index, step in enumerate(playbook_json[self.__format.STEPS_KEY]):
             self.__check_playbook_step_json(step, index)
