@@ -1,7 +1,6 @@
 # Backup Automation
 
-Backup Automation is a small, extensible Python tool to automate backups using configurable JSON "playbooks".
-It currently includes built-in support for the Restic backup tool via the `restic` backend.
+Extensible backup automation tool using playbooks.
 
 The project currently only supports the `restic` backend.
 
