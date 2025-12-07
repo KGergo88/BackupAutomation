@@ -1,0 +1,26 @@
+{
+	"type": "restic",
+	"repositories": [
+		{
+            "id": "PC_Documents",
+            "uri": "F:\\ResticBackups\\Documents"
+        },
+        {
+            "id": "Raspberry_Documents",
+            "uri": "sftp:johndoe@johndoe-raspberry:/media/johndoe/ExternalHdd/ResticBackups/Documents"
+        }
+	],
+	"steps": [
+		{
+			"command": "backup",
+			"repository": "Documents",
+			"source_path": "D:\\Documents",
+			"tags": ["RegularBackup"]
+		},
+        {
+            "command": "copy",
+            "source_repository": "PC_Documents",
+            "target_repository": "Raspberry_Documents"
+        }
+	]
+}
