@@ -4,10 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "backup-automation"
-description = "Extensible backup automation framework using playbooks"
+description = "Extensible backup automation tool using playbooks"
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "KGergo88", email = "kocsisandrasgergo@gmail.com"}]
 dynamic = ["version"]
 keywords = [
