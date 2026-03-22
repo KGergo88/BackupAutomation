@@ -4,6 +4,7 @@ import pathlib
 
 from backup_automation.playbook import Playbook
 from backup_automation.playbook_parser import PlaybookParser, PlaybookParserSettings
+from backup_automation.prompt_credential_provider import PromptCredentialProvider
 from backup_automation.restic.restic_backend import ResticBackend
 from backup_automation.restic.restic_playbook import ResticPlaybook
 from backup_automation.restic.restic_playbook_exception import ResticPlaybookException
@@ -31,6 +32,7 @@ class ResticPlaybookParser(PlaybookParser):
         self.__repositories: dict[str, ResticRepository] = {}
         self.__steps: list[ResticPlaybookStep] = []
         self.__format = ResticPlaybookFormat()
+        self.__prompt_credential_provider = PromptCredentialProvider()
 
     def parse(self, playbook_path: pathlib.Path) -> Playbook:
         """
@@ -115,19 +117,30 @@ class ResticPlaybookParser(PlaybookParser):
             self.__repositories[repository_id] = repository
 
     def __resolve_repository_password(self, repository_id: str, password_value: str | None) -> str:
+        # No password provided in the playbook
         if not password_value:
             if self.__no_interaction:
                 raise ResticPlaybookException(f"No password was provided for repository \"{repository_id}\"")
             return getpass.getpass(f"Enter password for restic repository \"{repository_id}\": ")
 
-        if not password_value.lower().startswith(self.__format.REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX):
-            return password_value
+        # Environment password provided in the playbook
+        if password_value.lower().startswith(self.__format.REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX):
+            password_environment_variable = password_value[len(self.__format.REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX):]
+            if password_environment_variable not in os.environ:
+                raise ResticPlaybookException(f"Environment variable \"{password_environment_variable}\""
+                                              f" for repository \"{repository_id}\" is not defined!")
+            return os.environ[password_environment_variable]
 
-        password_environment_variable = password_value[len(self.__format.REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX):]
-        if password_environment_variable not in os.environ:
-            raise ResticPlaybookException(f"Environment variable \"{password_environment_variable}\""
-                                          f" for repository \"{repository_id}\" is not defined!")
-        return os.environ[password_environment_variable]
+        # Prompt password provided in the playbook
+        if password_value.lower().startswith(self.__format.REPOSITORIES_PASSWORD_VALUE_PROMPT_PREFIX):
+            if self.__no_interaction:
+                raise ResticPlaybookException(f"Repository \"{repository_id}\" requested the prompt credential provider,"
+                                              f" which cannot be used in the no-interaction mode.")
+            credential_name = password_value[len(self.__format.REPOSITORIES_PASSWORD_VALUE_PROMPT_PREFIX):]
+            return self.__prompt_credential_provider.get_credential(credential_name)
+
+        # Plain text password provided in the playbook
+        return password_value
 
     def __parse_steps_json(self, steps_json: JsonList) -> None:
         step_parser = ResticPlaybookStepParser(self.__backend, self.__repository_lookup)

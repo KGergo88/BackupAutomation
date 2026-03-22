@@ -14,6 +14,7 @@ class ResticPlaybookFormat(PlaybookFormat):
     REPOSITORIES_URI_KEY = "uri"
     REPOSITORIES_PASSWORD_KEY = "password"
     REPOSITORIES_PASSWORD_VALUE_ENV_PREFIX = "env:"
+    REPOSITORIES_PASSWORD_VALUE_PROMPT_PREFIX = "prompt:"
     STEPS_KEY = "steps"
     STEPS_COMMAND_KEY = "command"
     STEPS_COMMAND_VALUE_BACKUP = "backup"
