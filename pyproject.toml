@@ -50,8 +50,8 @@ env_list = ["static-checks"]
 [tool.tox.env.static-checks]
 description = "Run static checks on project"
 deps = [
-    "mypy>=1.18.2",
-    "pylint>=4.0.3"
+    "mypy>=1.19.1",
+    "pylint>=4.0.5"
 ]
 commands = [
     ["mypy", "source"],
