@@ -59,7 +59,6 @@ For example this repository will have the implicit id `Documents`:
 Passwords of the repositories can be provided in the following ways:
 - During runtime in the terminal<br>
   If no passwords are provided in the playbook, the program will ask for them.
-  If the `--no-interaction` switch is active, the program will fail if it needs to ask for the password.
 - Plain text in the playbook<br>
   For this add the `password` field to your repository object with the password:
   `"password": "my_plaintext_password"`
@@ -67,6 +66,17 @@ Passwords of the repositories can be provided in the following ways:
   For this add the `password` field to your repository object that
   defines the name of the environment variable that stores the password:
   `"password": "env:MY_RESTIC_PASSWORD_ENV_VAR"`
+- Via the prompt credential provider<br>
+  For this add the `password` field to your repository object that
+  defines the name of the credential that shall be used for the repository:
+  `"password": "prompt:my_credential"`
+  The program will ask for the password during runtime in the terminal and then store it
+  for the duration of the playbook execution. If another repository references the same credential,
+  the program will use the stored password and not ask for it again.
+  This method is useful if you have multiple repositories that have the same password.
+  You can define multiple unique credentials if not all repositories use the same password.
+
+*Note: If the `--no-interaction` switch is active, the program will fail if it needs to ask for a password.*
 
 The program will pass the passwords to the restic backend via temporarily setting environment variables:
 - `RESTIC_PASSWORD` — password for the target repository
