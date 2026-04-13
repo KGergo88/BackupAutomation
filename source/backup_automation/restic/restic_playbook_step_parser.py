@@ -37,10 +37,17 @@ class ResticPlaybookStepParser:
                 raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
 
     def __parse_backup_step(self, step_json: JsonDict) -> ResticPlaybookBackupStep:
-        repository_id = step_json[self.__format.STEPS_BACKUP_REPOSITORY_KEY]
+        repository_id = step_json.get(self.__format.STEPS_BACKUP_REPOSITORY_KEY, None)
+        if repository_id is None:
+            raise ResticPlaybookException(f"Missing required key for backup step: {self.__format.STEPS_BACKUP_REPOSITORY_KEY}")
+
         repository = self.__repository_lookup(repository_id)
 
-        source_path = pathlib.Path(step_json[self.__format.STEPS_BACKUP_SOURCE_PATH_KEY])
+        raw_source_path = step_json.get(self.__format.STEPS_BACKUP_SOURCE_PATH_KEY, None)
+        if raw_source_path is None:
+            raise ResticPlaybookException(f"Missing required key for backup step: {self.__format.STEPS_BACKUP_SOURCE_PATH_KEY}")
+
+        source_path = pathlib.Path(raw_source_path)
         if not source_path.is_dir():
             raise ResticPlaybookException(f"Source path is not a valid directory: {source_path}")
 
