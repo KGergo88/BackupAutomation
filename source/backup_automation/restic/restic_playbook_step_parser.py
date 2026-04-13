@@ -77,11 +77,18 @@ class ResticPlaybookStepParser:
         return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags), working_dir)
 
     def __parse_copy_step(self, step_json: JsonDict) -> ResticPlaybookCopyStep:
-        source_repository_id = step_json[self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY]
+        source_repository_id = step_json.get(self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY, None)
+        if source_repository_id is None:
+            raise ResticPlaybookException(f"Missing required key for copy step: {self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY}")
+
         source_repository = self.__repository_lookup(source_repository_id)
 
-        target_repository_id = step_json[self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY]
+        target_repository_id = step_json.get(self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY, None)
+        if target_repository_id is None:
+            raise ResticPlaybookException(f"Missing required key for copy step: {self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY}")
+
         target_repository = self.__repository_lookup(target_repository_id)
+
         if source_repository == target_repository:
             raise ResticPlaybookException("The source and target repositories cannot be the same!")
 
