@@ -48,14 +48,33 @@ class ResticPlaybookStepParser:
             raise ResticPlaybookException(f"Missing required key for backup step: {self.__format.STEPS_BACKUP_SOURCE_PATH_KEY}")
 
         source_path = pathlib.Path(raw_source_path)
-        if not source_path.is_dir():
-            raise ResticPlaybookException(f"Source path is not a valid directory: {source_path}")
 
         tags = step_json.get(self.__format.STEPS_BACKUP_TAGS_KEY, [])
         if not isinstance(tags, list):
             raise ResticPlaybookException(f"Tags is not a valid JSON array: {tags}")
 
-        return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags))
+        raw_working_dir = step_json.get(self.__format.STEPS_BACKUP_WORKING_DIR_KEY, None)
+        working_dir = pathlib.Path(raw_working_dir) if raw_working_dir else None
+
+        if working_dir:
+            if source_path.is_absolute():
+                raise ResticPlaybookException(f"If working_dir is defined, source_path must be a relative path!"
+                                              f" working_dir: {working_dir} source_path: {source_path}")
+
+            path_to_backup = working_dir / source_path
+            if not path_to_backup.is_dir():
+                raise ResticPlaybookException(f"The path to backup (combination of working_dir and source_path)"
+                                              f" is not a valid directory: {path_to_backup}")
+        else:
+            if not source_path.is_absolute():
+                raise ResticPlaybookException(f"If working_dir is not defined, source_path must be an absolute path! "
+                                              f"source_path: {source_path}")
+
+            if not source_path.is_dir():
+                raise ResticPlaybookException(f"The path to backup (source_path)"
+                                              f" is not a valid directory: {source_path}")
+
+        return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags), working_dir)
 
     def __parse_copy_step(self, step_json: JsonDict) -> ResticPlaybookCopyStep:
         source_repository_id = step_json[self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY]

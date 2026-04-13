@@ -96,7 +96,12 @@ The `backup` step needs to have the following fields:
 - `repository`: This is a reference to a repository via the repository id
 - `source_path`: The path that needs to be backed up to the repository
 
-Optionally the `tags` field can be provided with a list of tags that needs to be applied to the new snapshot.
+The following fields are optional:
+- `tags`: list of tags that needs to be applied to the new snapshot
+- `working_dir`: The restic command will be executed in this directory.
+  The working directory will be changed only temporarily while executing the step
+  and after execution the previous value will be restored.
+  If undefined, no change will be done.
 
 #### Copy
 
