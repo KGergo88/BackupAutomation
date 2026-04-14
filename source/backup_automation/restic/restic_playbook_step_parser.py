@@ -1,6 +1,7 @@
 import pathlib
 from typing import Callable
 
+from backup_automation.json_config import JsonConfigException, get_optional_config_value, get_required_config_value
 from backup_automation.restic.restic_backend import ResticBackend
 from backup_automation.restic.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic.restic_playbook_format import ResticPlaybookFormat
@@ -37,23 +38,17 @@ class ResticPlaybookStepParser:
                 raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
 
     def __parse_backup_step(self, step_json: JsonDict) -> ResticPlaybookBackupStep:
-        repository_id = step_json.get(self.__format.STEPS_BACKUP_REPOSITORY_KEY, None)
-        if repository_id is None:
-            raise ResticPlaybookException(f"Missing required key for backup step: {self.__format.STEPS_BACKUP_REPOSITORY_KEY}")
-
+        repository_id = get_required_config_value(step_json, self.__format.STEPS_BACKUP_REPOSITORY_KEY, str)
         repository = self.__repository_lookup(repository_id)
 
-        raw_source_path = step_json.get(self.__format.STEPS_BACKUP_SOURCE_PATH_KEY, None)
-        if raw_source_path is None:
-            raise ResticPlaybookException(f"Missing required key for backup step: {self.__format.STEPS_BACKUP_SOURCE_PATH_KEY}")
-
+        raw_source_path = get_required_config_value(step_json, self.__format.STEPS_BACKUP_SOURCE_PATH_KEY, str)
         source_path = pathlib.Path(raw_source_path)
 
         tags = step_json.get(self.__format.STEPS_BACKUP_TAGS_KEY, [])
         if not isinstance(tags, list):
             raise ResticPlaybookException(f"Tags is not a valid JSON array: {tags}")
 
-        raw_working_dir = step_json.get(self.__format.STEPS_BACKUP_WORKING_DIR_KEY, None)
+        raw_working_dir = get_optional_config_value(step_json, self.__format.STEPS_BACKUP_WORKING_DIR_KEY, str)
         working_dir = pathlib.Path(raw_working_dir) if raw_working_dir else None
 
         if working_dir:
@@ -77,16 +72,10 @@ class ResticPlaybookStepParser:
         return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags), working_dir)
 
     def __parse_copy_step(self, step_json: JsonDict) -> ResticPlaybookCopyStep:
-        source_repository_id = step_json.get(self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY, None)
-        if source_repository_id is None:
-            raise ResticPlaybookException(f"Missing required key for copy step: {self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY}")
-
+        source_repository_id = get_required_config_value(step_json, self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY, str)
         source_repository = self.__repository_lookup(source_repository_id)
 
-        target_repository_id = step_json.get(self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY, None)
-        if target_repository_id is None:
-            raise ResticPlaybookException(f"Missing required key for copy step: {self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY}")
-
+        target_repository_id = get_required_config_value(step_json, self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY, str)
         target_repository = self.__repository_lookup(target_repository_id)
 
         if source_repository == target_repository:
