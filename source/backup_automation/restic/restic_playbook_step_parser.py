@@ -28,14 +28,17 @@ class ResticPlaybookStepParser:
         """
         Parses a playbook step from received JSON object into a ResticPlaybookStep object.
         """
-        step_command = step_json[self.__format.STEPS_COMMAND_KEY]
-        match step_command:
-            case self.__format.STEPS_COMMAND_VALUE_BACKUP:
-                return self.__parse_backup_step(step_json)
-            case self.__format.STEPS_COMMAND_VALUE_COPY:
-                return self.__parse_copy_step(step_json)
-            case _:
-                raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
+        try:
+            step_command = step_json[self.__format.STEPS_COMMAND_KEY]
+            match step_command:
+                case self.__format.STEPS_COMMAND_VALUE_BACKUP:
+                    return self.__parse_backup_step(step_json)
+                case self.__format.STEPS_COMMAND_VALUE_COPY:
+                    return self.__parse_copy_step(step_json)
+                case _:
+                    raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
+        except (ResticPlaybookException, JsonConfigException) as e:
+            raise ResticPlaybookException(f"Could not parse playbook step: {step_json}") from e
 
     def __parse_backup_step(self, step_json: JsonDict) -> ResticPlaybookBackupStep:
         repository_id = get_required_config_value(step_json, self.__format.STEPS_BACKUP_REPOSITORY_KEY, str)
