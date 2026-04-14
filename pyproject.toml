@@ -14,10 +14,10 @@ dynamic = ["version"]
 keywords = [
     "restic",
     "backup",
-    "automation"]
+    "automation"
+]
 classifiers = [
     "Programming Language :: Python :: 3.14",
-    "Private :: Do Not Upload"
 ]
 
 [project.optional-dependencies]

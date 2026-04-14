@@ -1,6 +1,7 @@
 import pathlib
 from typing import Callable
 
+from backup_automation.json_config import JsonConfigException, get_optional_config_value, get_required_config_value
 from backup_automation.restic.restic_backend import ResticBackend
 from backup_automation.restic.restic_playbook_exception import ResticPlaybookException
 from backup_automation.restic.restic_playbook_format import ResticPlaybookFormat
@@ -27,35 +28,59 @@ class ResticPlaybookStepParser:
         """
         Parses a playbook step from received JSON object into a ResticPlaybookStep object.
         """
-        step_command = step_json[self.__format.STEPS_COMMAND_KEY]
-        match step_command:
-            case self.__format.STEPS_COMMAND_VALUE_BACKUP:
-                return self.__parse_backup_step(step_json)
-            case self.__format.STEPS_COMMAND_VALUE_COPY:
-                return self.__parse_copy_step(step_json)
-            case _:
-                raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
+        try:
+            step_command = step_json[self.__format.STEPS_COMMAND_KEY]
+            match step_command:
+                case self.__format.STEPS_COMMAND_VALUE_BACKUP:
+                    return self.__parse_backup_step(step_json)
+                case self.__format.STEPS_COMMAND_VALUE_COPY:
+                    return self.__parse_copy_step(step_json)
+                case _:
+                    raise ResticPlaybookException(f"Unexpected command in step: {step_json}")
+        except (ResticPlaybookException, JsonConfigException) as e:
+            raise ResticPlaybookException(f"Could not parse playbook step: {step_json}") from e
 
     def __parse_backup_step(self, step_json: JsonDict) -> ResticPlaybookBackupStep:
-        repository_id = step_json[self.__format.STEPS_BACKUP_REPOSITORY_KEY]
+        repository_id = get_required_config_value(step_json, self.__format.STEPS_BACKUP_REPOSITORY_KEY, str)
         repository = self.__repository_lookup(repository_id)
 
-        source_path = pathlib.Path(step_json[self.__format.STEPS_BACKUP_SOURCE_PATH_KEY])
-        if not source_path.is_dir():
-            raise ResticPlaybookException(f"Source path is not a valid directory: {source_path}")
+        raw_source_path = get_required_config_value(step_json, self.__format.STEPS_BACKUP_SOURCE_PATH_KEY, str)
+        source_path = pathlib.Path(raw_source_path)
 
         tags = step_json.get(self.__format.STEPS_BACKUP_TAGS_KEY, [])
         if not isinstance(tags, list):
             raise ResticPlaybookException(f"Tags is not a valid JSON array: {tags}")
 
-        return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags))
+        raw_working_dir = get_optional_config_value(step_json, self.__format.STEPS_BACKUP_WORKING_DIR_KEY, str)
+        working_dir = pathlib.Path(raw_working_dir) if raw_working_dir else None
+
+        if working_dir:
+            if source_path.is_absolute():
+                raise ResticPlaybookException(f"If working_dir is defined, source_path must be a relative path!"
+                                              f" working_dir: {working_dir} source_path: {source_path}")
+
+            path_to_backup = working_dir / source_path
+            if not path_to_backup.is_dir():
+                raise ResticPlaybookException(f"The path to backup (combination of working_dir and source_path)"
+                                              f" is not a valid directory: {path_to_backup}")
+        else:
+            if not source_path.is_absolute():
+                raise ResticPlaybookException(f"If working_dir is not defined, source_path must be an absolute path! "
+                                              f"source_path: {source_path}")
+
+            if not source_path.is_dir():
+                raise ResticPlaybookException(f"The path to backup (source_path)"
+                                              f" is not a valid directory: {source_path}")
+
+        return ResticPlaybookBackupStep(self.__backend, repository, source_path, tuple(tags), working_dir)
 
     def __parse_copy_step(self, step_json: JsonDict) -> ResticPlaybookCopyStep:
-        source_repository_id = step_json[self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY]
+        source_repository_id = get_required_config_value(step_json, self.__format.STEPS_COPY_SOURCE_REPOSITORY_KEY, str)
         source_repository = self.__repository_lookup(source_repository_id)
 
-        target_repository_id = step_json[self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY]
+        target_repository_id = get_required_config_value(step_json, self.__format.STEPS_COPY_TARGET_REPOSITORY_KEY, str)
         target_repository = self.__repository_lookup(target_repository_id)
+
         if source_repository == target_repository:
             raise ResticPlaybookException("The source and target repositories cannot be the same!")
 

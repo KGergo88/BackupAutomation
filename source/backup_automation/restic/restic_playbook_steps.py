@@ -1,3 +1,4 @@
+import contextlib
 import pathlib
 from abc import ABC
 
@@ -22,19 +23,26 @@ class ResticPlaybookBackupStep(ResticPlaybookStep):
     """
     Class to represent the restic specific backup playbook step.
     """
+    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-positional-arguments
+    # This class needs to represent a backup step with all its fields.
     def __init__(self,
                  backend: ResticBackend,
                  repository: ResticRepository,
                  source_path: pathlib.Path,
-                 tags: tuple[str, ...]):
+                 tags: tuple[str, ...],
+                 working_dir: pathlib.Path | None):
         super().__init__()
         self.__backend = backend
         self.__repository = repository
         self.__source_path = source_path
         self.__tags = tags
+        self.__working_dir = working_dir
 
     def execute(self) -> None:
-        self.__backend.backup(self.__repository, self.__source_path, self.__tags)
+        working_dir_context = contextlib.chdir(self.__working_dir) if self.__working_dir else contextlib.nullcontext()
+        with working_dir_context:
+            self.__backend.backup(self.__repository, self.__source_path, self.__tags)
 
 
 class ResticPlaybookCopyStep(ResticPlaybookStep):

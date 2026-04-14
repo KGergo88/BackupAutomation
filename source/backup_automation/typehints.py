@@ -1,5 +1,8 @@
 from typing import Any
 
 
-JsonDict = dict[str, Any]
-JsonList = list[Any]
+JsonDictKey = str
+JsonDictValue = Any
+JsonDict = dict[JsonDictKey, JsonDictValue]
+JsonListElement = Any
+JsonList = list[JsonListElement]

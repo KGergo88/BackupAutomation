@@ -91,18 +91,27 @@ These represent their matching restic commands: [restic backup][restic-docs-back
 #### Backup
 
 With the backup step a path can be backed up to a repository.
-The `backup` step needs to have the following fields:
-- `repository`: This is a reference to a repository via the repository id
-- `source_path`: The path that needs to be backed up to the repository
 
-Optionally the `tags` field can be provided with a list of tags that needs to be applied to the new snapshot.
+The `backup` step needs to have the following fields:
+- `repository`: This is a reference to a repository via the repository id. Must be a string.
+- `source_path`: The path that needs to be backed up to the repository.
+  If a `working_dir` is defined, then it must be a relative path,
+  otherwise it must be an absolute path. Must be a string.
+
+The following fields are optional:
+- `tags`: list of tags that needs to be applied to the new snapshot
+- `working_dir`: The restic command will be executed in this directory.
+  The working directory will be changed only temporarily while executing the step
+  and after execution the previous value will be restored.
+  If undefined, no change will be done. Must be a string.
 
 #### Copy
 
 With the copy step snapshots can be copied between repositories.
+
 The `copy` step needs to have the following fields:
-- `source_repository`: Reference to the soruce repository via the repository id
-- `target_repository`: Reference to the target repository via the repository id
+- `source_repository`: Reference to the source repository via the repository id. Must be a string.
+- `target_repository`: Reference to the target repository via the repository id. Must be a string.
 
 ### Simple example
 

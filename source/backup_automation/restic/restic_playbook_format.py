@@ -22,5 +22,6 @@ class ResticPlaybookFormat(PlaybookFormat):
     STEPS_BACKUP_REPOSITORY_KEY = "repository"
     STEPS_BACKUP_SOURCE_PATH_KEY = "source_path"
     STEPS_BACKUP_TAGS_KEY = "tags"
+    STEPS_BACKUP_WORKING_DIR_KEY = "working_dir"
     STEPS_COPY_SOURCE_REPOSITORY_KEY = "source_repository"
     STEPS_COPY_TARGET_REPOSITORY_KEY = "target_repository"
